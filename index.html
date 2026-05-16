@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" href="data:,">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Honorda RPG</title>
 <meta name="theme-color" content="#060608">
@@ -119,7 +120,6 @@ body {
 }
 .pwa-banner-dismiss:hover { color: var(--text); }
 
-/* iOS share hint */
 .pwa-ios-hint {
   font-size: 10px; color: var(--text-dim);
   letter-spacing: 0.5px; line-height: 1.5;
@@ -2322,22 +2322,28 @@ function createNewChar() {
 }
 
 function deleteChar(id, e) {
-  e.stopPropagation();
+  if(e) e.stopPropagation();
   const list = getCharList();
   const char = list.find(c => c.id === id);
   if (!confirm(`Apagar o personagem "${char?.name || 'este sobrevivente'}"? Esta ação não pode ser desfeita.`)) return;
+  
+  if (typeof markCharDeleted === 'function') markCharDeleted(id);
+  
   const newList = list.filter(c => c.id !== id);
   saveCharList(newList);
   localStorage.removeItem(CHAR_PREFIX + id);
   renderIndex();
-  showToast('Sobrevivente apagado');
+  showToast('Ficha apagada');
 }
 
 /* ════════════════════════════════════════════════════
    NAVEGAÇÃO
 ════════════════════════════════════════════════════ */
 function goToIndex() {
-  if (currentCharId) flushSave();
+  if (currentCharId) {
+    flushSave();
+    if (typeof forceGistSync === 'function') forceGistSync();
+  }
   currentCharId = null;
   document.getElementById('screen-sheet').style.display = 'none';
   document.getElementById('screen-index').style.display = 'flex';
@@ -2685,7 +2691,7 @@ function flushSave() {
 
 function schedSave() {
   clearTimeout(saveTimeout);
-  saveTimeout = setTimeout(flushSave, 600);
+  saveTimeout = setTimeout(flushSave, 400); // <-- Tempo de reação mais rápido
 }
 
 function autoSave() { schedSave(); }
@@ -2760,10 +2766,18 @@ function deleteCurrentSheet() {
   const data = getCharData(currentCharId);
   const name = data.personagem_nome || 'este sobrevivente';
   if (!confirm(`Apagar a ficha de "${name}"? Esta ação não pode ser desfeita.`)) return;
-  const list = getCharList().filter(c => c.id !== currentCharId);
+  
+  const idToDel = currentCharId;
+  currentCharId = null; // impede de tentar salvar a ficha antes de sair
+  
+  if (typeof markCharDeleted === 'function') markCharDeleted(idToDel);
+  
+  const list = getCharList().filter(c => c.id !== idToDel);
   saveCharList(list);
-  localStorage.removeItem(CHAR_PREFIX + currentCharId);
+  localStorage.removeItem(CHAR_PREFIX + idToDel);
+  
   goToIndex();
+  if (typeof forceGistSync === 'function') forceGistSync();
   showToast('Ficha apagada');
 }
 
@@ -3277,32 +3291,42 @@ async function pushToGist(silent) {
   if (!token) return;
   if (!navigator.onLine) { setSyncDots('off'); return; }
   if (gistId && !hasUnpushed()) { setSyncDots('ok'); return; }
+  
   setSyncDots('ing');
   const payload = buildGistPayload();
+  
   try {
     let res;
     if (gistId) {
       res = await fetch('https://api.github.com/gists/' + gistId, {
         method: 'PATCH',
         headers: { Authorization: 'token ' + token, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ files: { [GIST_FILENAME]: { content: payload } } })
+        body: JSON.stringify({ files: { [GIST_FILENAME]: { content: payload } } }),
+        keepalive: true
       });
     } else {
       res = await fetch('https://api.github.com/gists', {
         method: 'POST',
         headers: { Authorization: 'token ' + token, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ description: 'Honorda RPG Fichas', public: false, files: { [GIST_FILENAME]: { content: payload } } })
+        body: JSON.stringify({ description: 'Honorda RPG Fichas', public: false, files: { [GIST_FILENAME]: { content: payload } } }),
+        keepalive: true
       });
     }
     if (!res.ok) throw new Error('HTTP ' + res.status);
+    
     const data = await res.json();
-    if (!gistId) { localStorage.setItem(GIST_ID_KEY, data.id); if (!silent) showToast('Gist criado com sucesso!'); }
+    if (!gistId) { 
+      localStorage.setItem(GIST_ID_KEY, data.id); 
+      if (!silent) showToast('Gist criado com sucesso!'); 
+    }
+    
     const sent = JSON.parse(payload);
     gistLastSavedAt = sent.savedAt;
     localStorage.setItem(GIST_LAST_KEY, gistLastSavedAt);
     markPushed();
     gistLastETag = '';
     setSyncDots('ok');
+    
   } catch(e) {
     setSyncDots('err');
     if (!silent) showToast('Erro ao enviar: ' + e.message);
@@ -3378,6 +3402,7 @@ async function fullSync(silent) {
   setSyncDots('ing');
   try {
     let needsPush = hasUnpushed();
+    
     if (gistId) {
       const remote = await pullFromGist(token, gistId);
       if (!remote) {
@@ -3386,33 +3411,50 @@ async function fullSync(silent) {
         return;
       }
       if (remote.devices) mergeDeviceReg(remote.devices);
+      
       if (remote.savedAt && remote.savedAt !== gistLastSavedAt) {
         const changed = applyRemoteData(remote);
         gistLastSavedAt = remote.savedAt;
         localStorage.setItem(GIST_LAST_KEY, gistLastSavedAt);
+        
         if (changed) {
           renderIndex();
           if (currentCharId && remote.chars && remote.chars[currentCharId]) {
             loadSheet(currentCharId);
           }
           if (!silent) showToast('Fichas atualizadas do Gist!');
-          needsPush = true; // Se mesclamos, avisamos os outros dispositivos do estado unificado
+          
+          if (!needsPush) {
+            markPushed();
+          }
         }
       }
-    } else { needsPush = true; }
+    } else { 
+      needsPush = true; 
+    }
     
     if (needsPush) await pushToGist(true);
     else setSyncDots('ok');
+    
   } catch(e) {
     setSyncDots('err');
     console.error('Sync error:', e);
-  } finally { gistIsSyncing = false; }
+  } finally { 
+    gistIsSyncing = false; 
+  }
 }
 
 function scheduleGistSync() {
   if (!getGistToken()) return;
   clearTimeout(gistSyncTimer);
-  gistSyncTimer = setTimeout(() => fullSync(true), 3500);
+  setSyncDots('ing'); // Muda a bolinha para "Sincronizando..." instantaneamente na tela
+  gistSyncTimer = setTimeout(() => fullSync(true), 1500); // Envia após 1,5 segundos sem editar
+}
+
+function forceGistSync() {
+  if (!getGistToken()) return;
+  clearTimeout(gistSyncTimer);
+  fullSync(true); // Envia instantaneamente
 }
 
 async function silentPoll() {
@@ -3441,7 +3483,17 @@ function startGistPolling() { silentPoll(); clearInterval(gistPollTimer); gistPo
 function stopGistPolling()  { clearInterval(gistPollTimer); }
 
 function startSmartGistMonitor() {
-  const fn = () => { if (document.visibilityState === 'visible') { silentPoll(); startGistPolling(); } else stopGistPolling(); };
+  const fn = () => { 
+    if (document.visibilityState === 'visible') { 
+      silentPoll(); 
+      startGistPolling(); 
+    } else {
+      stopGistPolling();
+      // Ao minimizar ou fechar o app, se houver edição, envia para a nuvem em plano de fundo
+      if (currentCharId) flushSave();
+      if (hasUnpushed()) forceGistSync();
+    }
+  };
   document.addEventListener('visibilitychange', fn);
   window.addEventListener('focus', fn);
   if (document.visibilityState === 'visible') { silentPoll(); startGistPolling(); }
@@ -3613,14 +3665,13 @@ document.getElementById('modal-sync').addEventListener('click', function(e) { if
 // ── OVERRIDES PARA CAPTURAR A DATA CERTA ──
 const _origSaveCharData = saveCharData;
 saveCharData = function(id, data) {
-  _origSaveCharData(id, data); // Salva o arquivo principal
+  _origSaveCharData(id, data); 
 
-  // A MÁGICA ESTÁ AQUI: Atualiza forçadamente a data de modificação
   const list = getCharList();
   const entry = list.find(c => c.id === id);
   if (entry) {
     entry.updatedAt = new Date().toISOString();
-    _origSaveCharList(list); // Usamos o Original para não causar Loop infinito
+    _origSaveCharList(list); 
   }
   scheduleGistSync();
 };
@@ -3633,17 +3684,15 @@ saveCharList = function(list) {
 
 const _origDeleteChar = deleteChar;
 deleteChar = function(id, e) {
-  markCharDeleted(id); // Guarda no cemitério para garantir que os outros aparelhos apaguem também
+  markCharDeleted(id); 
   _origDeleteChar(id, e);
   scheduleGistSync();
 };
 
 /* ════════════════════════════════════════════════════
    PWA — Service Worker & Install Prompt
-   (manifest.json e sw.js são arquivos externos reais)
 ════════════════════════════════════════════════════ */
 (function initPWA() {
-  // ── Service Worker — arquivo real sw.js na raiz ──
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').then(reg => {
       reg.onupdatefound = () => {
@@ -3657,7 +3706,6 @@ deleteChar = function(id, e) {
     }).catch(e => console.warn('[SW] Registro falhou:', e));
   }
 
-  // ── Install Prompt ──
   const DISMISSED_KEY = 'honorda_pwa_dismissed';
   const banner        = document.getElementById('pwa-install-banner');
   const installBtn    = document.getElementById('pwa-banner-install-btn');
@@ -3672,8 +3720,7 @@ deleteChar = function(id, e) {
   }
 
   function isStandalone() {
-    return window.matchMedia('(display-mode: standalone)').matches ||
-           window.navigator.standalone === true;
+    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
   }
 
   function showBanner() {
@@ -3681,9 +3728,7 @@ deleteChar = function(id, e) {
     setTimeout(() => banner.classList.add('visible'), 1500);
   }
 
-  function hideBanner() {
-    banner.classList.remove('visible');
-  }
+  function hideBanner() { banner.classList.remove('visible'); }
 
   window.addEventListener('beforeinstallprompt', e => {
     e.preventDefault();
