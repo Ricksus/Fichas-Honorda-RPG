@@ -3737,8 +3737,8 @@ deleteChar = function(id, e) {
   // ── Service Worker ──
   if ('serviceWorker' in navigator) {
     const swCode = `
-const CACHE = 'honorda-v6';
-const URLS  = ['./', './honorda-v6.html'];
+const CACHE = 'index';
+const URLS  = ['./', './index.html'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => {
     return Promise.allSettled(URLS.map(u => c.add(u)));
@@ -3849,6 +3849,8 @@ self.addEventListener('message', e => {
     showToast('Honorda instalado com sucesso!');
   });
 })();
+
+
 /* ════════════════════════════════════════════════════
    INIT
 ════════════════════════════════════════════════════ */
