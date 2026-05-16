@@ -355,9 +355,11 @@ input[type="checkbox"] { display: none; }
   text-transform: uppercase;
   cursor: pointer;
   transition: text-shadow .2s;
+  z-index: 99;
 }
 .card-btn-open:hover {
   text-shadow: 0 0 8px var(--red-glow);
+  border-bottom: 1px solid;
 }
 .card-btn-del {
   display: flex;
@@ -374,6 +376,7 @@ input[type="checkbox"] { display: none; }
   background: none;
   border: 1px solid transparent;
   border-radius: 2px;
+  z-index: 99;
 }
 .card-btn-del:hover {
   color: #ff4444;
