@@ -1,0 +1,3706 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Honorda RPG</title>
+<meta name="theme-color" content="#060608">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Honorda">
+<link rel="manifest" id="pwa-manifest">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════
+   VARIÁVEIS E RESET
+══════════════════════════════════════════════════ */
+:root {
+  --bg:           #060608;
+  --bg2:          #0d0d12;
+  --panel:        rgba(10,8,14,0.94);
+  --panel-border: rgba(90,30,20,0.5);
+  --red:          #8b1010;
+  --red-bright:   #c0392b;
+  --red-glow:     rgba(139,16,16,0.55);
+  --gold:         #9a7020;
+  --gold-light:   #c8a050;
+  --gold-glow:    rgba(154,112,32,0.4);
+  --text:         #cac3b4;
+  --text-dim:     #6a6258;
+  --text-bright:  #e8e0d0;
+  --line:         rgba(110,60,40,0.3);
+  --input-bg:     rgba(255,255,255,0.025);
+  --ff-title:     'Cinzel Decorative', serif;
+  --ff-head:      'Cinzel', serif;
+  --ff-body:      'Special Elite', cursive;
+  --ff-italic:    'IM Fell English', serif;
+  --accent-blue:  rgba(40,70,140,0.25);
+  --accent-red:   rgba(140,20,20,0.2);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse 100% 50% at 50% 0%, #1a0808 0%, transparent 55%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  color: var(--text);
+  font-family: var(--ff-body);
+  font-size: 14px;
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--red); border-radius: 3px; }
+
+/* ══════════════════════════════════════════════════
+   INPUTS GLOBAIS
+══════════════════════════════════════════════════ */
+input[type="text"], input[type="number"], textarea {
+  background: var(--input-bg);
+  border: none;
+  border-bottom: 1px solid var(--line);
+  color: var(--text-bright);
+  font-family: var(--ff-body);
+  font-size: 13px;
+  padding: 3px 6px;
+  width: 100%;
+  transition: border-color .2s, box-shadow .2s;
+  -moz-appearance: textfield;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+input:focus, textarea:focus {
+  outline: none;
+  border-bottom-color: var(--red-bright);
+  box-shadow: 0 2px 10px var(--red-glow);
+  background: rgba(139,16,16,0.06);
+}
+textarea { resize: vertical; }
+input[type="checkbox"] { display: none; }
+
+/* ══════════════════════════════════════════════════
+   TELA DE FICHAS (INDEX)
+══════════════════════════════════════════════════ */
+#screen-index {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+#screen-sheet { display: none; }
+
+.index-header {
+  padding: 40px 60px 30px;
+  border-bottom: 1px solid var(--panel-border);
+  background: linear-gradient(180deg, rgba(20,5,5,0.98) 0%, rgba(10,5,5,0.94) 100%);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 30px;
+}
+.index-logo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.index-logo-title {
+  font-family: var(--ff-title);
+  font-size: 3.6rem;
+  font-weight: 900;
+  color: var(--text-bright);
+  line-height: 1;
+  text-shadow: 0 0 40px var(--red-glow), 0 0 80px rgba(139,0,0,0.2);
+  letter-spacing: 2px;
+}
+.index-logo-sub {
+  font-family: var(--ff-head);
+  font-size: 10px;
+  letter-spacing: 8px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  padding-left: 3px;
+}
+.index-logo-sep {
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(90deg, var(--red) 0%, transparent 60%);
+  margin-top: 6px;
+}
+
+.index-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #6b0000 0%, #3d0000 100%);
+  border: 1px solid var(--red);
+  color: var(--text-bright);
+  font-family: var(--ff-head);
+  font-size: 11px;
+  letter-spacing: 3px;
+  padding: 11px 22px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all .2s;
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.05);
+  opacity: 0;
+  transition: opacity .2s;
+}
+.btn-primary:hover::before { opacity: 1; }
+.btn-primary:hover {
+  box-shadow: 0 0 20px var(--red-glow), 0 0 40px rgba(139,0,0,0.15);
+  border-color: var(--red-bright);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid rgba(90,60,50,0.5);
+  color: var(--text-dim);
+  font-family: var(--ff-head);
+  font-size: 10px;
+  letter-spacing: 2px;
+  padding: 9px 16px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all .2s;
+}
+.btn-secondary:hover {
+  border-color: var(--red);
+  color: var(--text);
+}
+
+.index-body {
+  flex: 1;
+  padding: 40px 60px 60px;
+}
+.index-count {
+  font-family: var(--ff-head);
+  font-size: 9px;
+  letter-spacing: 4px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.index-count span {
+  color: var(--gold-light);
+}
+
+/* Seções de categoria */
+.index-section { margin-bottom: 40px; }
+.index-section:last-child { margin-bottom: 0; }
+.index-section-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--panel-border);
+}
+.index-section-title {
+  font-family: var(--ff-head);
+  font-size: 11px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.index-section-title::before {
+  content: '◆ ';
+  color: var(--red);
+  font-size: 8px;
+}
+.index-section-count {
+  font-family: var(--ff-italic);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--text-dim);
+  opacity: 0.6;
+}
+
+.agents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.agent-card {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  cursor: pointer;
+  transition: all .2s;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.agent-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: radial-gradient(ellipse at 50% 0%, rgba(139,16,16,0.08) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity .2s;
+}
+.agent-card:hover::before { opacity: 1; }
+.agent-card:hover {
+  border-color: rgba(139,16,16,0.6);
+  box-shadow: 0 0 0 1px rgba(139,16,16,0.2), 0 8px 30px rgba(0,0,0,0.5);
+  transform: translateY(-2px);
+}
+.agent-card::after {
+  content: '';
+  position: absolute;
+  top: -1px; left: -1px;
+  width: 8px; height: 8px;
+  border-top: 1px solid var(--red);
+  border-left: 1px solid var(--red);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.card-avatar {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(80,20,20,0.6) 0%, rgba(20,5,5,0.8) 100%);
+  border: 1px solid rgba(139,16,16,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--ff-title);
+  font-size: 1.4rem;
+  color: var(--red-bright);
+  flex-shrink: 0;
+  text-shadow: 0 0 10px var(--red-glow);
+}
+.card-info { flex: 1; min-width: 0; }
+.card-name {
+  font-family: var(--ff-head);
+  font-size: 14px;
+  color: var(--text-bright);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.card-occ {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 2px;
+  letter-spacing: 1px;
+}
+.card-date {
+  font-size: 9px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}
+
+.card-stats {
+  display: flex;
+  padding: 10px 16px;
+  gap: 0;
+}
+.card-stat {
+  flex: 1;
+  text-align: center;
+  border-right: 1px solid var(--line);
+  padding: 4px 8px;
+}
+.card-stat:last-child { border-right: none; }
+.card-stat-val {
+  font-family: var(--ff-italic);
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--text-bright);
+  line-height: 1;
+}
+.card-stat-lbl {
+  font-size: 7px;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.card-footer {
+  display: flex;
+  padding: 10px 16px;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--line);
+  margin-top: auto;
+}
+.card-btn-open {
+  font-family: var(--ff-head);
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--red-bright);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: text-shadow .2s;
+}
+.card-btn-open:hover {
+  text-shadow: 0 0 8px var(--red-glow);
+}
+.card-btn-del {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--ff-head);
+  font-size: 8px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all .2s;
+  padding: 5px 10px;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 2px;
+}
+.card-btn-del:hover {
+  color: #ff4444;
+  border-color: rgba(180,30,30,0.4);
+  background: rgba(139,16,16,0.1);
+  box-shadow: 0 0 10px rgba(139,16,16,0.2);
+}
+
+/* Empty state */
+.empty-state {
+  grid-column: 1/-1;
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--text-dim);
+}
+.empty-state .empty-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  display: block;
+  opacity: 0.3;
+}
+.empty-state h3 {
+  font-family: var(--ff-head);
+  font-size: 14px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  color: var(--text-dim);
+}
+.empty-state p { font-size: 12px; line-height: 1.8; }
+
+/* ══════════════════════════════════════════════════
+   HEADER DA FICHA
+══════════════════════════════════════════════════ */
+.site-header {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  padding: 16px 36px 14px;
+  border-bottom: 1px solid var(--panel-border);
+  background: linear-gradient(180deg, rgba(20,5,5,0.98) 0%, rgba(10,5,5,0.94) 100%);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 30px rgba(0,0,0,0.8);
+}
+.back-btn {
+  background: none;
+  border: 1px solid rgba(90,60,50,0.4);
+  color: var(--text-dim);
+  font-family: var(--ff-head);
+  font-size: 10px;
+  letter-spacing: 2px;
+  padding: 7px 12px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all .2s;
+  flex-shrink: 0;
+}
+.back-btn:hover { border-color: var(--red); color: var(--text); }
+
+.logo-block {
+  display: flex;
+  align-items: baseline;
+  gap: 0;
+  flex-shrink: 0;
+}
+.logo-h {
+  font-family: var(--ff-title);
+  font-size: 2.6rem;
+  font-weight: 900;
+  color: var(--text-bright);
+  line-height: 1;
+  text-shadow: 0 0 30px var(--red-glow);
+  letter-spacing: -1px;
+}
+.logo-rest {
+  font-family: var(--ff-title);
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: var(--text-dim);
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  padding-top: 6px;
+}
+.logo-sep {
+  width: 1px;
+  height: 36px;
+  background: linear-gradient(180deg, transparent, var(--red), transparent);
+  margin: 0 22px;
+  flex-shrink: 0;
+}
+.header-fields {
+  display: flex;
+  gap: 24px;
+  flex: 1;
+}
+.hfield { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.hfield label {
+  font-family: var(--ff-head);
+  font-size: 8px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.hfield input { font-size: 14px; border-bottom-color: rgba(110,60,40,0.4); }
+.header-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.btn-action {
+  background: transparent;
+  border: 1px solid var(--panel-border);
+  color: var(--text-dim);
+  font-family: var(--ff-head);
+  font-size: 9px;
+  letter-spacing: 2px;
+  padding: 7px 13px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all .2s;
+}
+.btn-action:hover { border-color: var(--red); color: var(--red-bright); box-shadow: 0 0 12px var(--red-glow); }
+.btn-action.danger { border-color: rgba(80,0,0,0.5); }
+.btn-action.danger:hover { border-color: var(--red-bright); color: #ff4444; }
+
+/* ══════════════════════════════════════════════════
+   TABS
+══════════════════════════════════════════════════ */
+.tab-nav {
+  display: flex;
+  background: rgba(5,3,3,0.9);
+  border-bottom: 1px solid var(--panel-border);
+  padding: 0 36px;
+}
+.tab-btn {
+  background: none; border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-dim);
+  font-family: var(--ff-head);
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  padding: 13px 22px;
+  cursor: pointer;
+  transition: all .2s;
+  position: relative;
+}
+.tab-btn::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 50%; right: 50%;
+  height: 2px;
+  background: var(--red);
+  transition: left .25s, right .25s;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--text-bright); }
+.tab-btn.active::after { left: 0; right: 0; }
+.tab-page { display: none; padding: 26px 36px 60px; }
+.tab-page.active { display: block; }
+
+/* ══════════════════════════════════════════════════
+   PAINEL
+══════════════════════════════════════════════════ */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  position: relative;
+}
+.panel::before, .panel::after {
+  content: '';
+  position: absolute;
+  width: 8px; height: 8px;
+  border-color: var(--red);
+  border-style: solid;
+}
+.panel::before { top: -1px; left: -1px; border-width: 1px 0 0 1px; }
+.panel::after  { bottom: -1px; right: -1px; border-width: 0 1px 1px 0; }
+.panel-title {
+  font-family: var(--ff-head);
+  font-size: 9px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  padding: 9px 14px 7px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.panel-title::before {
+  content: '';
+  display: inline-block;
+  width: 4px; height: 4px;
+  background: var(--red);
+  box-shadow: 0 0 6px var(--red);
+  transform: rotate(45deg);
+  flex-shrink: 0;
+}
+.panel-body { padding: 13px; }
+
+/* ══════════════════════════════════════════════════
+   LAYOUT PRINCIPAL — 3 COLUNAS
+══════════════════════════════════════════════════ */
+.main-grid {
+  display: grid;
+  grid-template-columns: 170px 1fr 196px;
+  gap: 18px;
+  align-items: start;
+}
+
+/* ── COLUNA ESQUERDA: Aptidões ── */
+.aptidoes-col { display: flex; flex-direction: column; gap: 6px; }
+.col-label {
+  font-family: var(--ff-head);
+  font-size: 9px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  text-align: center;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 4px;
+}
+.apt-item {
+  display: grid;
+  grid-template-columns: 1fr 44px 52px;
+  align-items: center;
+  gap: 0;
+  padding: 5px 8px;
+  border: 1px solid transparent;
+  border-bottom: 1px solid rgba(110,60,40,0.18);
+  transition: background .15s, border-color .15s;
+  position: relative;
+}
+.apt-item::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 2px; height: 0;
+  background: var(--red);
+  transition: height .2s;
+}
+.apt-item:has(input:focus)::before { height: 70%; }
+.apt-item:has(input:focus) {
+  background: rgba(139,16,16,0.05);
+  border-color: rgba(139,16,16,0.2);
+}
+.apt-label {
+  font-family: var(--ff-head);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text);
+}
+.apt-ring {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px; height: 32px;
+  border-left: 1px solid rgba(110,60,40,0.2);
+}
+.apt-ring input {
+  width: 100%; height: 100%;
+  text-align: center;
+  font-family: var(--ff-italic);
+  font-style: italic;
+  font-size: 1.4rem;
+  background: transparent;
+  border: none;
+  color: var(--text-bright);
+  padding: 0;
+}
+.apt-ring input:focus { box-shadow: none; background: transparent; }
+.apt-crit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  border-left: 1px solid rgba(110,60,40,0.2);
+  padding-left: 6px;
+  width: 52px;
+  height: 32px;
+}
+.apt-crit-label { display: none; }
+.crit-ring { display: flex; align-items: center; justify-content: center; }
+.crit-display {
+  font-family: var(--ff-head);
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+  user-select: none;
+  transition: color .2s;
+  text-align: center;
+  padding: 0 4px;
+}
+.crit-display.active {
+  color: var(--gold-light);
+  text-shadow: 0 0 8px var(--gold-glow);
+}
+
+/* ── COLUNA CENTRAL ── */
+.center-col { display: flex; flex-direction: column; gap: 15px; }
+.occ-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.field-group { display: flex; flex-direction: column; gap: 3px; }
+.field-group label {
+  font-family: var(--ff-head);
+  font-size: 8px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.deco-divider {
+  display: flex; align-items: center; gap: 14px; margin: 4px 0 12px;
+}
+.deco-divider::before, .deco-divider::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line), transparent);
+}
+.deco-divider span {
+  font-size: 14px; color: var(--red); flex-shrink: 0;
+}
+.deco-divider .deco-label {
+  font-family: var(--ff-head);
+  font-size: 8px;
+  letter-spacing: 4px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  font-size: 9px;
+}
+
+/* Pontos de Estado */
+.estado-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.estado-box { padding: 11px; text-align: center; position: relative; }
+.estado-box::before, .estado-box::after {
+  content: ''; position: absolute;
+  width: 6px; height: 6px; border-color: var(--red); border-style: solid;
+}
+.estado-box::before { top: 0; left: 0; border-width: 1px 0 0 1px; }
+.estado-box::after  { bottom: 0; right: 0; border-width: 0 1px 1px 0; }
+.estado-title {
+  font-family: var(--ff-head);
+  font-size: 8px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+.estado-calc-hint {
+  font-size: 8px;
+  color: var(--gold-light);
+  opacity: 0.7;
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+  font-family: var(--ff-head);
+}
+.estado-inputs {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 4px;
+}
+.estado-inputs input {
+  text-align: center;
+  font-family: var(--ff-italic);
+  font-style: italic;
+  font-size: 1.5rem;
+  border: none;
+  border-bottom: 1px solid var(--line);
+  padding: 3px;
+}
+.estado-sep { color: var(--text-dim); font-size: 16px; padding: 0 2px; }
+.estado-labels { display: grid; grid-template-columns: 1fr auto 1fr; gap: 4px; margin-top: 2px; }
+.estado-labels span { font-size: 7px; letter-spacing: 2px; color: var(--text-dim); text-align: center; text-transform: uppercase; }
+.carne-atual { color: #cc4444 !important; }
+.energia-atual { color: #5588dd !important; }
+
+/* Pontos Extremos e Corrompidos */
+.pontos-extras-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pontos-box { padding: 11px; text-align: center; position: relative; }
+.pontos-box::before, .pontos-box::after {
+  content: ''; position: absolute;
+  width: 6px; height: 6px; border-style: solid;
+}
+.pontos-box.extremos::before { border-color: var(--gold); top: 0; left: 0; border-width: 1px 0 0 1px; }
+.pontos-box.extremos::after  { border-color: var(--gold); bottom: 0; right: 0; border-width: 0 1px 1px 0; }
+.pontos-box.corrompidos::before { border-color: #6a3a6a; top: 0; left: 0; border-width: 1px 0 0 1px; }
+.pontos-box.corrompidos::after  { border-color: #6a3a6a; bottom: 0; right: 0; border-width: 0 1px 1px 0; }
+.pontos-title {
+  font-family: var(--ff-head);
+  font-size: 8px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.pontos-box.extremos .pontos-title { color: var(--gold-light); }
+.pontos-box.corrompidos .pontos-title { color: #b070b0; }
+.pontos-calc-hint {
+  font-size: 7px;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+  font-family: var(--ff-head);
+  opacity: 0.6;
+}
+.pontos-box.extremos .pontos-calc-hint { color: var(--gold-light); }
+.pontos-box.corrompidos .pontos-calc-hint { color: #b070b0; }
+
+/* Descontrole */
+.descontrole-panel .panel-body { padding: 12px; text-align: center; }
+.diamonds-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 6px; }
+.diamond-check {
+  width: 16px; height: 16px;
+  border: 1px solid rgba(190,150,90,0.35);
+  transform: rotate(45deg);
+  cursor: pointer;
+  transition: all .15s;
+  flex-shrink: 0;
+}
+.diamond-check.checked {
+  background: var(--red);
+  border-color: var(--red-bright);
+  box-shadow: 0 0 8px var(--red-glow);
+}
+
+/* Níveis */
+.niveis-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.nivel-box { text-align: center; padding: 12px 8px; position: relative; }
+.nivel-box::before, .nivel-box::after {
+  content: ''; position: absolute;
+  width: 6px; height: 6px; border-color: var(--red); border-style: solid;
+}
+.nivel-box::before { top: 0; left: 0; border-width: 1px 0 0 1px; }
+.nivel-box::after  { bottom: 0; right: 0; border-width: 0 1px 1px 0; }
+.nivel-label {
+  font-family: var(--ff-head);
+  font-size: 8px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+.nivel-square {
+  width: 66px; height: 66px;
+  border: 1px solid rgba(190,150,90,0.35);
+  margin: 0 auto 8px;
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle, rgba(100,0,0,0.06) 0%, transparent 80%);
+  transition: box-shadow .3s;
+}
+.nivel-square:focus-within { box-shadow: 0 0 15px var(--red-glow); border-color: var(--red); }
+.nivel-square input, .nivel-circle input {
+  text-align: center;
+  font-family: var(--ff-italic);
+  font-style: italic;
+  font-size: 1.7rem;
+  width: 100%; height: 100%;
+  border: none; background: transparent; padding: 0;
+}
+.nivel-square input:focus, .nivel-circle input:focus { box-shadow: none; background: transparent; }
+.nivel-circle {
+  width: 66px; height: 66px;
+  border-radius: 50%;
+  border: 1px solid rgba(190,150,90,0.35);
+  margin: 0 auto 8px;
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle, rgba(100,0,0,0.06) 0%, transparent 80%);
+  transition: box-shadow .3s;
+}
+.nivel-circle:focus-within { box-shadow: 0 0 15px var(--red-glow); border-color: var(--red); }
+.nivel-circle input { border-radius: 50%; }
+.sub-label {
+  font-size: 7px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text-dim); margin-bottom: 6px; display: block;
+}
+.essencia-row { display: flex; justify-content: center; gap: 8px; margin-bottom: 10px; }
+.essencia-dot {
+  width: 17px; height: 17px;
+  border-radius: 50%;
+  border: 1px solid rgba(190,150,90,0.35);
+  cursor: pointer;
+  transition: all .2s;
+}
+.essencia-dot.checked {
+  background: var(--text-bright);
+  border-color: var(--text-bright);
+  box-shadow: 0 0 8px rgba(220,210,190,0.5);
+}
+.xp-row { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+.xp-row input { text-align: center; font-size: 11px; }
+
+/* Especialidades */
+.esp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px 18px; }
+.esp-group-title {
+  font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text-dim); grid-column: 1/-1; padding-top: 5px;
+  border-top: 1px solid var(--line); margin-top: 2px;
+}
+.esp-group-title:first-child { border-top: none; padding-top: 0; margin-top: 0; }
+.check-label {
+  display: flex; align-items: center; gap: 7px;
+  cursor: pointer; font-size: 11px; color: var(--text);
+  transition: color .15s; user-select: none;
+}
+.check-label:hover { color: var(--text-bright); }
+.check-box {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(190,150,90,0.35);
+  flex-shrink: 0; transition: all .15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.check-label.checked .check-box {
+  background: var(--gold);
+  border-color: var(--gold-light);
+  box-shadow: 0 0 6px var(--gold-glow);
+}
+.check-label.checked .check-box::after {
+  content: ''; width: 4px; height: 4px;
+  border-radius: 50%; background: #fff8e0;
+}
+
+/* Equipamentos */
+.equip-table { width: 100%; border-collapse: collapse; }
+.equip-table th {
+  font-family: var(--ff-head); font-size: 7px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--text-dim);
+  padding: 4px 5px; border-bottom: 1px solid var(--line); text-align: left; font-weight: 400;
+}
+.equip-table td { padding: 1px 3px; border-bottom: 1px solid rgba(70,40,30,0.12); }
+.equip-table td input { font-size: 10px; padding: 3px 4px; border-bottom: none; }
+.equip-table tr:hover td { background: rgba(100,0,0,0.04); }
+.hiestas-row {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--line);
+}
+.hiestas-label {
+  font-family: var(--ff-head); font-size: 8px; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--text-dim); flex-shrink: 0;
+}
+
+/* ── COLUNA DIREITA ── */
+.right-col { display: flex; flex-direction: column; gap: 12px; }
+.res-group { margin-bottom: 12px; }
+.res-group:last-child { margin-bottom: 0; }
+.res-group-title {
+  font-size: 7px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--text-dim); margin-bottom: 6px; padding-bottom: 3px;
+  border-bottom: 1px solid var(--line);
+}
+.res-item { display: flex; justify-content: space-between; align-items: center; padding: 2px 0; }
+.res-item label { font-size: 11px; color: var(--text); }
+.res-item input { width: 40px; text-align: center; font-size: 12px; font-family: var(--ff-italic); font-style: italic; }
+.tec-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 2px 0; border-bottom: 1px solid rgba(70,40,30,0.1); transition: background .1s;
+}
+.tec-item:hover { background: rgba(100,0,0,0.04); }
+.tec-item label { font-size: 11px; color: var(--text); }
+.tec-item input {
+  width: 34px; text-align: center; font-size: 11px;
+  font-family: var(--ff-italic); font-style: italic; border-bottom: 1px solid var(--line);
+}
+.areas-textarea { width: 100%; min-height: 80px; border: none; background: transparent; resize: vertical; font-size: 11px; line-height: 1.6; }
+
+/* ══════════════════════════════════════════════════
+   ABA 2 — HABILIDADES
+══════════════════════════════════════════════════ */
+.page2-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.lined-textarea {
+  width: 100%; min-height: 220px; border: none;
+  background: repeating-linear-gradient(transparent, transparent 23px, rgba(110,60,40,0.18) 24px);
+  line-height: 24px; padding: 0 6px; resize: vertical; font-size: 12px; color: var(--text-bright);
+}
+
+/* ══════════════════════════════════════════════════
+   ABA 3 — TRAUMAS
+══════════════════════════════════════════════════ */
+.page3-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.trauma-list { display: flex; flex-direction: column; gap: 3px; }
+.trauma-row {
+  display: flex; align-items: center; gap: 7px;
+  padding: 2px 0; border-bottom: 1px solid rgba(70,40,30,0.12);
+}
+.trauma-row input[type="text"] { flex: 1; font-size: 11px; border-bottom: none; padding: 3px 5px; }
+.trauma-row input[type="text"]:focus { box-shadow: none; background: rgba(100,0,0,0.05); }
+.trauma-toggle {
+  width: 17px; height: 17px; border-radius: 50%;
+  border: 1px solid rgba(190,150,90,0.3);
+  cursor: pointer; flex-shrink: 0; transition: all .15s;
+}
+.trauma-toggle.checked { background: var(--red); border-color: var(--red-bright); box-shadow: 0 0 6px var(--red-glow); }
+.ativo-hint { font-size: 7px; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; }
+.tall-textarea {
+  width: 100%; min-height: 140px;
+  border: 1px solid var(--line); background: rgba(0,0,0,0.2);
+  padding: 8px; resize: vertical; font-size: 12px; line-height: 1.6;
+}
+.tall-textarea.xl { min-height: 260px; }
+
+/* ══════════════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════════════ */
+.toast {
+  position: fixed; bottom: 28px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(8,3,3,0.97);
+  border: 1px solid var(--red);
+  color: var(--text);
+  font-family: var(--ff-head);
+  font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+  padding: 11px 26px;
+  opacity: 0; pointer-events: none;
+  transition: opacity .3s, transform .3s; z-index: 999;
+  box-shadow: 0 0 30px var(--red-glow);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ══════════════════════════════════════════════════
+   MODAL
+══════════════════════════════════════════════════ */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 500;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(3px);
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: #0a0608;
+  border: 1px solid var(--panel-border);
+  padding: 32px 36px;
+  max-width: 420px;
+  width: 90%;
+  position: relative;
+  animation: fadeUp .3s ease both;
+}
+.modal-box::before {
+  content: ''; position: absolute;
+  top: -1px; left: -1px; width: 10px; height: 10px;
+  border-top: 1px solid var(--red); border-left: 1px solid var(--red);
+}
+.modal-box::after {
+  content: ''; position: absolute;
+  bottom: -1px; right: -1px; width: 10px; height: 10px;
+  border-bottom: 1px solid var(--red); border-right: 1px solid var(--red);
+}
+.modal-title {
+  font-family: var(--ff-title);
+  font-size: 1.1rem;
+  color: var(--text-bright);
+  margin-bottom: 24px;
+  letter-spacing: 2px;
+}
+.modal-field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 16px; }
+.modal-field label {
+  font-family: var(--ff-head); font-size: 8px;
+  letter-spacing: 3px; text-transform: uppercase; color: var(--text-dim);
+}
+.modal-field input { font-size: 14px; padding: 6px 8px; }
+.modal-actions { display: flex; gap: 10px; margin-top: 24px; justify-content: flex-end; }
+
+/* ══════════════════════════════════════════════════
+   ANIMAÇÕES
+══════════════════════════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.tab-page.active > * { animation: fadeUp .3s ease both; }
+.tab-page.active > *:nth-child(1) { animation-delay: .04s; }
+.tab-page.active > *:nth-child(2) { animation-delay: .08s; }
+.tab-page.active > *:nth-child(3) { animation-delay: .12s; }
+
+.agent-card { animation: fadeUp .35s ease both; }
+
+/* ══════════════════════════════════════════════════
+   PWA / MOBILE MELHORIAS
+══════════════════════════════════════════════════ */
+@media (display-mode: standalone) {
+  .site-header { padding-top: max(16px, env(safe-area-inset-top)); }
+  .index-header { padding-top: max(40px, env(safe-area-inset-top, 40px)); }
+}
+@media (max-width: 600px) {
+  .index-header { flex-direction: column; align-items: flex-start; padding: 20px; gap: 16px; }
+  .index-actions { flex-direction: column; width: 100%; }
+  .index-actions button { width: 100%; text-align: center; }
+  .site-header { flex-wrap: wrap; gap: 10px; padding: 12px 16px; }
+  .logo-block, .logo-sep { display: none; }
+  .header-fields { min-width: 0; gap: 10px; }
+  .header-actions { flex-wrap: wrap; gap: 6px; }
+  .header-actions .btn-action { font-size: 8px; padding: 6px 10px; }
+  .main-grid { grid-template-columns: 1fr; }
+  .tab-nav { padding: 0 8px; overflow-x: auto; }
+  .tab-btn { padding: 12px 14px; font-size: 9px; }
+  .tab-page { padding: 16px; }
+  .agents-grid { grid-template-columns: 1fr; }
+  .modal-box { margin: 8px; width: calc(100% - 16px); }
+}
+
+/* ══════════════════════════════════════════════════
+   UTILITÁRIOS
+══════════════════════════════════════════════════ */
+.mt8 { margin-top: 8px; }
+.mt12 { margin-top: 12px; }
+.mb10 { margin-bottom: 10px; }
+.mb16 { margin-bottom: 16px; }
+.flex { display: flex; }
+.col  { flex-direction: column; }
+
+/* Linha de separação de colunas bordada */
+.inv-row {
+  display: flex; align-items: center; gap: 6px;
+  margin-left: auto; font-family: var(--ff-head);
+  font-size: 9px; color: var(--text-dim); letter-spacing: 1px;
+}
+.inv-row input { width: 26px; text-align: center; font-size: 11px; padding: 2px; }
+
+.modal-type-btn {
+  flex: 1; padding: 9px; background: transparent;
+  border: 1px solid rgba(90,60,50,0.5);
+  color: var(--text-dim); font-family: var(--ff-head);
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  cursor: pointer; transition: all .2s;
+}
+.modal-type-btn.active {
+  background: linear-gradient(135deg, #6b0000 0%, #3d0000 100%);
+  border-color: var(--red); color: var(--text-bright);
+  box-shadow: 0 0 12px var(--red-glow);
+}
+
+/* ══════════════════════════════════════════════════
+   AVATAR COM IMAGEM
+══════════════════════════════════════════════════ */
+.profile-avatar-area {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 12px 0;
+}
+.profile-avatar-wrap {
+  position: relative; width: 110px; height: 110px; cursor: pointer;
+}
+.profile-avatar-img {
+  width: 110px; height: 110px; border-radius: 50%;
+  border: 2px solid rgba(139,16,16,0.5);
+  object-fit: cover; display: none;
+  box-shadow: 0 0 20px var(--red-glow);
+}
+.profile-avatar-placeholder {
+  width: 110px; height: 110px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(80,20,20,0.6) 0%, rgba(20,5,5,0.8) 100%);
+  border: 2px dashed rgba(139,16,16,0.35);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px; font-family: var(--ff-title); font-size: 2rem; color: var(--red-bright);
+  text-shadow: 0 0 10px var(--red-glow); transition: all .2s;
+}
+.profile-avatar-placeholder span { font-size: 8px; font-family: var(--ff-head); letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; }
+.profile-avatar-wrap:hover .profile-avatar-placeholder { border-color: var(--red); box-shadow: 0 0 15px var(--red-glow); }
+.profile-avatar-overlay {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: rgba(0,0,0,0.55); opacity: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--ff-head); font-size: 9px; letter-spacing: 2px;
+  color: var(--text-bright); text-transform: uppercase; transition: opacity .2s;
+}
+.profile-avatar-wrap:hover .profile-avatar-overlay { opacity: 1; }
+.profile-avatar-remove {
+  font-family: var(--ff-head); font-size: 8px; letter-spacing: 2px;
+  color: var(--text-dim); text-transform: uppercase; cursor: pointer;
+  background: none; border: none; transition: color .2s; display: none;
+}
+.profile-avatar-remove:hover { color: #ff4444; }
+
+/* Card com imagem */
+.card-avatar-img {
+  width: 52px; height: 52px; border-radius: 50%;
+  object-fit: cover; border: 1px solid rgba(139,16,16,0.4);
+  box-shadow: 0 0 8px var(--red-glow);
+}
+
+/* Badge de criatura no card */
+.card-type-badge {
+  font-family: var(--ff-head); font-size: 8px; letter-spacing: 2px;
+  text-transform: uppercase; padding: 2px 7px;
+  border: 1px solid rgba(100,60,130,0.5); color: #b070d0;
+  background: rgba(80,40,100,0.12);
+}
+
+/* ══════════════════════════════════════════════════
+   FICHA DE CRIATURA
+══════════════════════════════════════════════════ */
+/* ND (Nível de Dificuldade) */
+.nd-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;
+}
+.nd-box {
+  text-align: center; padding: 12px 8px; position: relative;
+  border: 1px solid rgba(100,60,130,0.35);
+}
+.nd-box::before, .nd-box::after {
+  content: ''; position: absolute; width: 6px; height: 6px;
+  border-color: #6a3a8a; border-style: solid;
+}
+.nd-box::before { top: 0; left: 0; border-width: 1px 0 0 1px; }
+.nd-box::after  { bottom: 0; right: 0; border-width: 0 1px 1px 0; }
+.nd-label {
+  font-family: var(--ff-head); font-size: 8px; letter-spacing: 3px;
+  text-transform: uppercase; color: #b070d0; margin-bottom: 8px;
+}
+.nd-square {
+  width: 66px; height: 66px; border: 1px solid rgba(150,100,190,0.4);
+  margin: 0 auto; display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle, rgba(80,20,100,0.1) 0%, transparent 80%);
+}
+.nd-square input {
+  text-align: center; font-family: var(--ff-italic); font-style: italic;
+  font-size: 1.7rem; width: 100%; height: 100%; border: none; background: transparent; padding: 0;
+  color: #d090f0;
+}
+.nd-square input:focus { box-shadow: none; background: transparent; }
+
+/* Nível de Choque */
+.choque-panel { border: 1px solid rgba(100,60,130,0.4); position: relative; }
+.choque-panel::before, .choque-panel::after {
+  content: ''; position: absolute; width: 8px; height: 8px;
+  border-color: #6a3a8a; border-style: solid;
+}
+.choque-panel::before { top: -1px; left: -1px; border-width: 1px 0 0 1px; }
+.choque-panel::after { bottom: -1px; right: -1px; border-width: 0 1px 1px 0; }
+.choque-title {
+  font-family: var(--ff-head); font-size: 9px; letter-spacing: 4px;
+  text-transform: uppercase; color: #b070d0;
+  padding: 9px 14px 7px; border-bottom: 1px solid rgba(100,60,130,0.3);
+  display: flex; align-items: center; gap: 8px;
+}
+.choque-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.choque-item { display: flex; flex-direction: column; gap: 4px; }
+.choque-item label {
+  font-family: var(--ff-head); font-size: 8px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--text-dim);
+}
+.choque-item input[type="number"] { text-align: center; font-size: 1.3rem; font-family: var(--ff-italic); font-style: italic; }
+
+/* Fraquezas */
+.fraqueza-list { display: flex; flex-direction: column; gap: 4px; }
+.fraqueza-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 3px 0; border-bottom: 1px solid rgba(70,40,30,0.12);
+}
+.fraqueza-row input[type="text"] { flex: 1; font-size: 11px; border-bottom: none; padding: 3px 5px; }
+
+/* Ações da criatura */
+.acao-card {
+  background: rgba(10,8,14,0.8); border: 1px solid var(--line);
+  padding: 12px; position: relative; transition: border-color .2s;
+  margin-bottom: 10px;
+}
+.acao-card:hover { border-color: rgba(139,16,16,0.4); }
+.acao-card.ataque { border-left: 3px solid var(--red); }
+.acao-card.habilidade { border-left: 3px solid var(--gold); }
+.acao-card-header {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+}
+.acao-type-tag {
+  font-family: var(--ff-head); font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
+  padding: 2px 8px; border: 1px solid; flex-shrink: 0;
+}
+.acao-type-tag.ataque { border-color: rgba(160,40,40,0.5); color: var(--red-bright); background: rgba(139,16,16,0.1); }
+.acao-type-tag.acao-comum { border-color: rgba(90,60,50,0.5); color: var(--text-dim); }
+.acao-type-tag.habilidade { border-color: rgba(140,110,30,0.5); color: var(--gold-light); background: rgba(120,90,20,0.1); }
+.acao-name-input {
+  flex: 1; font-size: 14px; font-family: var(--ff-head); color: var(--text-bright);
+  background: transparent; border: none; border-bottom: 1px solid var(--line); padding: 2px 4px;
+}
+.acao-name-input:focus { outline: none; border-bottom-color: var(--red-bright); box-shadow: 0 2px 8px var(--red-glow); }
+.acao-remove-btn {
+  background: none; border: 1px solid rgba(80,0,0,0.4); color: var(--text-dim);
+  font-size: 10px; padding: 2px 7px; cursor: pointer; transition: all .2s; flex-shrink: 0;
+}
+.acao-remove-btn:hover { border-color: var(--red-bright); color: #ff4444; }
+.acao-fields { display: grid; gap: 6px; }
+.acao-field-row { display: flex; align-items: center; gap: 8px; }
+.acao-field-label {
+  font-family: var(--ff-head); font-size: 8px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--text-dim); flex-shrink: 0; min-width: 55px;
+}
+.acao-field-input { flex: 1; font-size: 12px; }
+.acoes-add-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.btn-add-acao {
+  background: transparent; border: 1px dashed rgba(90,60,50,0.5);
+  color: var(--text-dim); font-family: var(--ff-head); font-size: 9px;
+  letter-spacing: 2px; padding: 8px 14px; cursor: pointer; text-transform: uppercase;
+  transition: all .2s;
+}
+.btn-add-acao:hover { border-color: var(--red); color: var(--text); }
+.btn-add-acao.gold:hover { border-color: var(--gold-light); color: var(--gold-light); }
+
+/* Criatura — Pontos Corrompidos editáveis */
+.corrompidos-editavel { color: #b070b0 !important; }
+
+/* Marcas de descontrole — bonus manual */
+.descontrole-bonus-row {
+  display: flex; align-items: center; gap: 8px; justify-content: center;
+  margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line);
+}
+.descontrole-bonus-label {
+  font-family: var(--ff-head); font-size: 8px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--text-dim);
+}
+.descontrole-bonus-input {
+  width: 44px; text-align: center; font-size: 13px;
+  font-family: var(--ff-italic); font-style: italic;
+}
+/* ══════════════════════════════════════════════════
+   RESPONSIVO — TABLET / PORTRAIT (≤ 900px)
+══════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+
+  /* Index */
+  .index-header { flex-direction: column; align-items: flex-start; gap: 16px; padding: 24px; }
+  .index-logo-title { font-size: 2.6rem; }
+  .index-body { padding: 20px 24px 40px; }
+  .agents-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+
+  /* Header da ficha */
+  .site-header {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px 18px;
+  }
+  .logo-block { order: 1; }
+  .logo-sep { display: none; }
+  .logo-h { font-size: 2rem; }
+  .logo-rest { font-size: 1rem; }
+  .back-btn { order: 0; }
+  .header-fields { order: 3; width: 100%; gap: 12px; }
+  .header-actions { order: 2; margin-left: auto; }
+
+  /* Avatar no header — encolhe um pouco */
+  .profile-avatar-wrap { width: 80px; height: 80px; }
+  .profile-avatar-img { width: 80px; height: 80px; }
+  .profile-avatar-placeholder { width: 80px; height: 80px; font-size: 1.4rem; }
+
+  /* Tabs */
+  .tab-nav { padding: 0 18px; overflow-x: auto; }
+  .tab-btn { padding: 11px 14px; font-size: 9px; letter-spacing: 2px; white-space: nowrap; }
+
+  /* Tab pages */
+  .tab-page { padding: 18px 18px 50px; }
+
+  /* Grid principal — aptidões em cima, centro no meio, direita embaixo */
+  .main-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  /* Aptidões: vira grade horizontal 2 colunas para não ocupar tanta altura */
+  .aptidoes-col { gap: 0; }
+  .aptidoes-col > div:first-child { /* col-label */ margin-bottom: 4px; }
+
+  /* Grids de 2 colunas que ficam em 1 no mobile */
+  .estado-row { grid-template-columns: 1fr 1fr; } /* mantém 2 */
+  .pontos-extras-row { grid-template-columns: 1fr 1fr; } /* mantém 2 */
+  .niveis-row { grid-template-columns: 1fr 1fr; } /* mantém 2 */
+  .occ-row { grid-template-columns: 1fr; gap: 10px; }
+  .page2-grid { grid-template-columns: 1fr; }
+  .page3-grid { grid-template-columns: 1fr; }
+
+  /* Equipamentos — oculta coluna Materiais pra caber */
+  .equip-table th:nth-child(3),
+  .equip-table td:nth-child(3) { display: none; }
+
+  /* Criatura — ND row */
+  .nd-row { grid-template-columns: 1fr 1fr; }
+
+  /* Criatura — Ações & Habilidades: 1 coluna */
+  #ctab-1 > div { grid-template-columns: 1fr !important; }
+
+  /* Choque grid */
+  .choque-grid { grid-template-columns: 1fr; }
+
+  /* Modal */
+  .modal-box { padding: 24px 20px; }
+
+  /* Esp-grid */
+  .esp-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* ══════════════════════════════════════════════════
+   RESPONSIVO — MOBILE (≤ 600px)
+══════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+
+  body { font-size: 13px; }
+
+  /* Index */
+  .index-header { padding: 18px 16px; }
+  .index-logo-title { font-size: 2rem; }
+  .index-body { padding: 16px 16px 40px; }
+  .agents-grid { grid-template-columns: 1fr; }
+  .index-actions { flex-direction: row; width: 100%; }
+  .index-actions .btn-primary,
+  .index-actions .btn-secondary { flex: 1; text-align: center; }
+
+  /* Header da ficha */
+  .site-header { padding: 10px 14px; gap: 8px; }
+  .logo-h { font-size: 1.6rem; }
+  .logo-rest { font-size: 0.85rem; letter-spacing: 3px; }
+  .back-btn { font-size: 9px; padding: 6px 10px; }
+  .btn-action { font-size: 8px; padding: 6px 10px; letter-spacing: 1px; }
+
+  /* Avatar menor no mobile */
+  .profile-avatar-wrap { width: 60px; height: 60px; }
+  .profile-avatar-img { width: 60px; height: 60px; }
+  .profile-avatar-placeholder { width: 60px; height: 60px; font-size: 1.1rem; }
+
+  /* Tab pages */
+  .tab-page { padding: 14px 14px 50px; }
+  .tab-btn { padding: 10px 10px; font-size: 8px; letter-spacing: 1px; }
+
+  /* Grid principal */
+  .main-grid { gap: 12px; }
+
+  /* Estado boxes menores */
+  .estado-row { gap: 8px; }
+  .estado-inputs input { font-size: 1.2rem; }
+  .pontos-extras-row { gap: 8px; }
+  .niveis-row { gap: 8px; }
+  .nivel-square, .nivel-circle { width: 52px; height: 52px; }
+  .nivel-square input, .nivel-circle input { font-size: 1.4rem; }
+
+  /* Aptidões — valor e crit um pouco menores */
+  .apt-ring { width: 38px; height: 28px; }
+  .apt-ring input { font-size: 1.2rem; }
+  .apt-crit { width: 44px; height: 28px; }
+  .apt-label { font-size: 9px; }
+
+  /* Diamonds menores */
+  .diamond-check { width: 13px; height: 13px; }
+
+  /* Painel padding menor */
+  .panel-body { padding: 10px; }
+
+  /* Esp-grid — 1 coluna no mobile pequeno */
+  .esp-grid { grid-template-columns: 1fr; }
+
+  /* Equipamentos — oculta Peso tb */
+  .equip-table th:nth-child(4),
+  .equip-table td:nth-child(4) { display: none; }
+
+  /* ND row — 1 coluna */
+  .nd-row { grid-template-columns: 1fr; }
+  .nd-box { display: flex; align-items: center; gap: 12px; text-align: left; padding: 10px; }
+  .nd-square { margin: 0; }
+
+  /* Modal crop menor */
+  #crop-container { height: 240px !important; }
+
+  /* Descontrole bonus */
+  .descontrole-bonus-row { flex-wrap: wrap; justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     TELA DE ÍNDICE (Lista de Personagens)
+══════════════════════════════════════════════ -->
+<div id="screen-index">
+  <header class="index-header">
+    <div class="index-logo">
+      <div class="index-logo-title">Honorda RPG</div>
+      <div class="index-logo-sub">Sistema de Fichas de Personagem</div>
+      <div class="index-logo-sep"></div>
+    </div>
+    <div class="index-actions">
+      <button class="btn-secondary" id="btn-sync-open" onclick="openSyncModal()" style="display:flex;align-items:center;gap:6px;">
+        <span id="sync-dot-header" style="width:7px;height:7px;border-radius:50%;background:var(--text-dim);flex-shrink:0;display:inline-block;"></span>
+        <span id="sync-label-header">Sync</span>
+      </button>
+      <button class="btn-secondary" id="btn-import-index">&#8593; Importar Ficha</button>
+      <button class="btn-primary" id="btn-new-char">+ Nova Ficha</button>
+    </div>
+  </header>
+  <div class="index-body">
+    <div class="index-count">Fichas registradas: <span id="agent-count">0</span></div>
+
+    <div class="index-section" id="section-survivors">
+      <div class="index-section-header">
+        <span class="index-section-title">Sobreviventes</span>
+        <span class="index-section-count" id="count-survivors">0</span>
+      </div>
+      <div class="agents-grid" id="grid-survivors"></div>
+    </div>
+
+    <div class="index-section" id="section-creatures">
+      <div class="index-section-header">
+        <span class="index-section-title">Criaturas</span>
+        <span class="index-section-count" id="count-creatures">0</span>
+      </div>
+      <div class="agents-grid" id="grid-creatures"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TELA DA FICHA
+══════════════════════════════════════════════ -->
+<div id="screen-sheet">
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <button class="back-btn" id="btn-back">← Fichas</button>
+    <div class="logo-block">
+      <span class="logo-h">H</span>
+      <span class="logo-rest">onorda</span>
+    </div>
+    <div class="logo-sep"></div>
+    <div class="header-fields">
+      <div class="hfield">
+        <label>Personagem</label>
+        <input type="text" id="personagem_nome" autocomplete="off" oninput="autoSave()">
+      </div>
+      <div class="hfield">
+        <label>Jogador</label>
+        <input type="text" id="jogador_nome" autocomplete="off" oninput="autoSave()">
+      </div>
+    </div>
+    <!-- Avatar -->
+    <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;">
+      <div class="profile-avatar-wrap" id="profile-avatar-wrap" onclick="triggerAvatarUpload()">
+        <img class="profile-avatar-img" id="profile-avatar-img" src="" alt="Avatar">
+        <div class="profile-avatar-placeholder" id="profile-avatar-placeholder">
+          <span style="font-size:1.6rem;">☽</span>
+          <span>Imagem</span>
+        </div>
+        <div class="profile-avatar-overlay">Alterar</div>
+      </div>
+      <button class="profile-avatar-remove" id="profile-avatar-remove" onclick="removeAvatar()">✕ Remover</button>
+      <input type="file" id="avatar-file-input" accept="image/*" style="display:none" onchange="onAvatarFileSelected(event)">
+    </div>
+    <div class="header-actions">
+      <button class="btn-action" id="btn-sync-sheet" onclick="openSyncModal()" style="display:flex;align-items:center;gap:5px;" title="Sincronizar">
+        <span id="sync-dot-sheet" style="width:6px;height:6px;border-radius:50%;background:var(--text-dim);display:inline-block;"></span>
+        Sync
+      </button>
+      <button class="btn-action" id="btn-export">&#8595; Exportar</button>
+      <button class="btn-action danger" id="btn-delete-sheet">&#9888; Apagar</button>
+    </div>
+  </header>
+
+  <!-- TABS -->
+  <nav class="tab-nav" id="sheet-tab-nav">
+    <button class="tab-btn active" data-tab="0">I — Estatísticas</button>
+    <button class="tab-btn" data-tab="1">II — Habilidades</button>
+    <button class="tab-btn" data-tab="2">III — Traumas & Lore</button>
+  </nav>
+  <!-- TABS CRIATURA -->
+  <nav class="tab-nav" id="creature-tab-nav" style="display:none;">
+    <button class="tab-btn creature-tab active" data-ctab="0">I — Estatísticas</button>
+    <button class="tab-btn creature-tab" data-ctab="1">II — Ações & Habilidades</button>
+  </nav>
+
+  <!-- ══ ABA 1 — ESTATÍSTICAS ══ -->
+  <div class="tab-page active" id="tab-0">
+    <div class="main-grid">
+
+      <!-- COLUNA ESQUERDA: Aptidões -->
+      <div class="aptidoes-col">
+        <div class="col-label">Aptidões</div>
+        <div style="display:grid;grid-template-columns:1fr 44px 52px;font-family:var(--ff-head);font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);padding:0 8px 4px;border-bottom:1px solid var(--line);margin-bottom:2px;">
+          <span></span><span style="text-align:center;">Valor</span><span style="text-align:center;">Crít.</span>
+        </div>
+
+        <div class="apt-item">
+          <div class="apt-label">Físico</div>
+          <div class="apt-ring"><input type="number" id="apt_fisico" min="0" max="6" oninput="recalcAll()"></div>
+          <div class="apt-crit">
+            <span class="apt-crit-label">Crítico</span>
+            <div class="crit-ring crit-display" id="apt_fisico_crit">—</div>
+          </div>
+        </div>
+
+        <div class="apt-item">
+          <div class="apt-label">Destreza</div>
+          <div class="apt-ring"><input type="number" id="apt_destreza" min="0" max="6" oninput="recalcCrit('apt_destreza')"></div>
+          <div class="apt-crit">
+            <span class="apt-crit-label">Crítico</span>
+            <div class="crit-ring crit-display" id="apt_destreza_crit">—</div>
+          </div>
+        </div>
+
+        <div class="apt-item">
+          <div class="apt-label">Mental</div>
+          <div class="apt-ring"><input type="number" id="apt_mental" min="0" max="6" oninput="recalcCrit('apt_mental')"></div>
+          <div class="apt-crit">
+            <span class="apt-crit-label">Crítico</span>
+            <div class="crit-ring crit-display" id="apt_mental_crit">—</div>
+          </div>
+        </div>
+
+        <div class="apt-item">
+          <div class="apt-label">Presença</div>
+          <div class="apt-ring"><input type="number" id="apt_presenca" min="0" max="6" oninput="recalcCrit('apt_presenca')"></div>
+          <div class="apt-crit">
+            <span class="apt-crit-label">Crítico</span>
+            <div class="crit-ring crit-display" id="apt_presenca_crit">—</div>
+          </div>
+        </div>
+
+        <div class="apt-item">
+          <div class="apt-label">Alma</div>
+          <div class="apt-ring"><input type="number" id="apt_alma" min="0" max="6" oninput="recalcCrit('apt_alma')"></div>
+          <div class="apt-crit">
+            <span class="apt-crit-label">Crítico</span>
+            <div class="crit-ring crit-display" id="apt_alma_crit">—</div>
+          </div>
+        </div>
+      </div><!-- /aptidoes-col -->
+
+      <!-- COLUNA CENTRAL -->
+      <div class="center-col">
+
+        <!-- Ocupação / Receptáculo -->
+        <div class="occ-row">
+          <div class="field-group">
+            <label>Ocupação</label>
+            <input type="text" id="ocupacao">
+          </div>
+          <div class="field-group">
+            <label>Receptáculo</label>
+            <input type="text" id="receptaculo">
+          </div>
+        </div>
+
+        <!-- Pontos de Estado -->
+        <div>
+          <div class="deco-divider">
+            <span>✦</span>
+            <span class="deco-label">Pontos de Estado</span>
+            <span>✦</span>
+          </div>
+          <div class="estado-row">
+            <div class="estado-box" style="border:1px solid rgba(160,35,35,0.25);">
+              <div class="estado-title">Pontos de Carne</div>
+              <div class="estado-calc-hint" id="carne-formula">6 + Físico + Constituição</div>
+              <div class="estado-inputs">
+                <input type="number" id="carne_atual" class="carne-atual" min="0">
+                <span class="estado-sep">/</span>
+                <input type="number" id="carne_total" min="0">
+              </div>
+              <div class="estado-labels"><span>Atual</span><span></span><span>Total</span></div>
+            </div>
+            <div class="estado-box" style="border:1px solid rgba(40,70,160,0.25);">
+              <div class="estado-title">Pontos de Energia</div>
+              <div class="estado-calc-hint" id="energia-formula">8 + Físico</div>
+              <div class="estado-inputs">
+                <input type="number" id="energia_atual" class="energia-atual" min="0">
+                <span class="estado-sep">/</span>
+                <input type="number" id="energia_total" min="0">
+              </div>
+              <div class="estado-labels"><span>Atual</span><span></span><span>Total</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Marcas de Descontrole -->
+        <div class="panel descontrole-panel">
+          <div class="panel-title">Marcas de Descontrole</div>
+          <div class="panel-body">
+            <div class="diamonds-row" id="diamonds-row"></div>
+            <div class="descontrole-bonus-row">
+              <span class="descontrole-bonus-label">Máx. Bônus Manual</span>
+              <input type="number" class="descontrole-bonus-input" id="descontrole_bonus_manual" min="0" max="20" value="0" oninput="recalcCorrompidos()">
+            </div>
+          </div>
+        </div>
+
+        <!-- Pontos Extremos e Corrompidos -->
+        <div class="pontos-extras-row">
+          <div class="pontos-box extremos" style="border:1px solid rgba(120,90,20,0.3);">
+            <div class="pontos-title">Pontos Extremos</div>
+            <div class="pontos-calc-hint">Inicia em 0 / 30</div>
+            <div class="estado-inputs">
+              <input type="number" id="extremos_atual" min="0" value="0">
+              <span class="estado-sep">/</span>
+              <input type="number" id="extremos_total" min="0" value="30">
+            </div>
+            <div class="estado-labels"><span>Atual</span><span></span><span>Total</span></div>
+          </div>
+          <div class="pontos-box corrompidos" style="border:1px solid rgba(100,50,100,0.3);">
+            <div class="pontos-title">Pontos Corrompidos</div>
+            <div class="pontos-calc-hint" id="corrompidos-hint">Máx. marcas: 4 × 2 = 8</div>
+            <div class="estado-inputs">
+              <input type="number" id="corrompidos_atual" min="0" value="0">
+              <span class="estado-sep">/</span>
+              <input type="number" id="corrompidos_total" min="0" readonly style="color:#b070b0;opacity:0.8;">
+            </div>
+            <div class="estado-labels"><span>Atual</span><span></span><span>Total</span></div>
+          </div>
+        </div>
+
+        <!-- Níveis -->
+        <div class="niveis-row">
+          <div class="nivel-box" style="border:1px solid rgba(80,50,25,0.35);">
+            <div class="nivel-label">Nível de Alma</div>
+            <div class="nivel-square"><input type="number" id="nivel_alma" min="0"></div>
+            <span class="sub-label">Essência de Alma</span>
+            <div class="essencia-row">
+              <div class="essencia-dot" data-id="essencia_1"></div>
+              <div class="essencia-dot" data-id="essencia_2"></div>
+              <div class="essencia-dot" data-id="essencia_3"></div>
+            </div>
+          </div>
+          <div class="nivel-box" style="border:1px solid rgba(80,50,25,0.35);">
+            <div class="nivel-label">Nível de Sobrevivente</div>
+            <div class="nivel-circle"><input type="number" id="nivel_sobrevivente" min="0"></div>
+            <span class="sub-label">Pontos de Experiência</span>
+            <div class="xp-row">
+              <input type="number" id="xp_atual" placeholder="Atual" min="0">
+              <input type="number" id="xp_total" placeholder="Total" min="0">
+            </div>
+          </div>
+        </div>
+
+        <!-- Especialidades -->
+        <div class="panel">
+          <div class="panel-title">Especialidades</div>
+          <div class="panel-body">
+            <div class="esp-grid">
+              <div class="esp-group-title" style="border:none;padding:0;margin:0;">Técnicas Especiais</div>
+              <div class="esp-group-title" style="border:none;padding:0;margin:0;">Proteções</div>
+              <label class="check-label" data-id="esp_armasbrancas"><div class="check-box"></div>Armas Brancas</label>
+              <label class="check-label" data-id="prot_leve"><div class="check-box"></div>Leve</label>
+              <label class="check-label" data-id="esp_armasfogo"><div class="check-box"></div>Armas de Fogo</label>
+              <label class="check-label" data-id="prot_media"><div class="check-box"></div>Média</label>
+              <label class="check-label" data-id="esp_armasdisparo"><div class="check-box"></div>Armas de Disparo</label>
+              <label class="check-label" data-id="prot_fortificada"><div class="check-box"></div>Fortificada</label>
+              <label class="check-label" data-id="esp_explosivos"><div class="check-box"></div>Explosivos</label>
+              <label class="check-label" data-id="prot_troglodita"><div class="check-box"></div>Troglodita</label>
+              <label class="check-label" data-id="esp_robotica"><div class="check-box"></div>Robótica</label>
+              <div class="esp-group-title" style="grid-column:2;border-top:1px solid var(--line);padding-top:5px;margin-top:2px;">Armamentos</div>
+              <label class="check-label" data-id="esp_computacao"><div class="check-box"></div>Computação</label>
+              <label class="check-label" data-id="arm_simples"><div class="check-box"></div>Simples</label>
+              <label class="check-label" data-id="esp_engmecanica"><div class="check-box"></div>Eng. Mecânica</label>
+              <label class="check-label" data-id="arm_medianas"><div class="check-box"></div>Medianas</label>
+              <label class="check-label" data-id="esp_alquimia"><div class="check-box"></div>Alquimia</label>
+              <label class="check-label" data-id="arm_complexas"><div class="check-box"></div>Complexas</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Equipamentos -->
+        <div class="panel">
+          <div class="panel-title">
+            Equipamentos
+            <div class="inv-row">
+              Inventário <input type="number" id="inv_atual"> / <input type="number" id="inv_total">
+            </div>
+          </div>
+          <div class="panel-body">
+            <table class="equip-table">
+              <thead>
+                <tr>
+                  <th style="width:28%">Nome</th>
+                  <th style="width:36%">Efeito</th>
+                  <th style="width:22%">Materiais</th>
+                  <th style="width:14%">Peso</th>
+                </tr>
+              </thead>
+              <tbody id="equip-tbody"></tbody>
+            </table>
+            <div class="hiestas-row">
+              <span class="hiestas-label">Hiestas:</span>
+              <input type="text" id="hiestas">
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /center-col -->
+
+      <!-- COLUNA DIREITA -->
+      <div class="right-col">
+
+        <!-- Resistências -->
+        <div class="panel">
+          <div class="panel-title">Resistências</div>
+          <div class="panel-body">
+            <div class="res-group">
+              <div class="res-group-title">Defensivas</div>
+              <div class="res-item"><label>Bloqueio</label><input type="number" id="res_bloqueio" min="0" max="6"></div>
+              <div class="res-item"><label>Esquiva</label><input type="number" id="res_esquiva" min="0" max="6"></div>
+              <div class="res-item"><label>Revidar</label><input type="number" id="res_revidar" min="0" max="6"></div>
+            </div>
+            <div class="res-group">
+              <div class="res-group-title">Férreas</div>
+              <div class="res-item"><label>Constituição</label><input type="number" id="res_constituicao" min="0" max="6" oninput="recalcAll()"></div>
+              <div class="res-item"><label>Emocional</label><input type="number" id="res_emocional" min="0" max="6"></div>
+              <div class="res-item"><label>Resist. Obscura</label><input type="number" id="res_obscura" min="0" max="6"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Técnicas -->
+        <div class="panel">
+          <div class="panel-title">Técnicas</div>
+          <div class="panel-body" id="tecnicas-body"></div>
+        </div>
+
+        <!-- Áreas -->
+        <div class="panel">
+          <div class="panel-title">Áreas</div>
+          <div class="panel-body">
+            <textarea class="areas-textarea" id="areas_desc"></textarea>
+          </div>
+        </div>
+
+      </div><!-- /right-col -->
+    </div><!-- /main-grid -->
+  </div><!-- /tab-0 -->
+
+  <!-- ══ ABA 2 — HABILIDADES ══ -->
+  <div class="tab-page" id="tab-1">
+    <div class="page2-grid">
+      <div>
+        <div class="panel mb16">
+          <div class="panel-title">Habilidades</div>
+          <div class="panel-body"><textarea class="lined-textarea" id="txt_habilidades" style="min-height:280px;"></textarea></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Anatemias</div>
+          <div class="panel-body"><textarea class="lined-textarea" id="txt_anatemias" style="min-height:250px;"></textarea></div>
+        </div>
+      </div>
+      <div>
+        <div class="panel mb16">
+          <div class="panel-title">Energias</div>
+          <div class="panel-body"><textarea class="lined-textarea" id="txt_energias" style="min-height:200px;"></textarea></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Símbolos</div>
+          <div class="panel-body"><textarea class="lined-textarea" id="txt_simbolos" style="min-height:310px;"></textarea></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ABA 3 — TRAUMAS & LORE ══ -->
+  <div class="tab-page" id="tab-2">
+    <div class="page3-grid">
+      <div style="display:flex;flex-direction:column;gap:15px;">
+        <div class="panel">
+          <div class="panel-title">
+            Traumas Temporários
+            <span class="ativo-hint" style="margin-left:auto;">Ativo?</span>
+          </div>
+          <div class="panel-body">
+            <div class="trauma-list" id="trauma-temp-list"></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Marcas Emocionais</div>
+          <div class="panel-body"><textarea class="tall-textarea" id="txt_marcasemocionais"></textarea></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Afeições</div>
+          <div class="panel-body"><textarea class="tall-textarea" id="txt_afeicoes"></textarea></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Ideologias e Crenças</div>
+          <div class="panel-body"><textarea class="tall-textarea" id="txt_ideologias"></textarea></div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:15px;">
+        <div class="panel">
+          <div class="panel-title">Traumas Permanentes</div>
+          <div class="panel-body"><textarea class="tall-textarea" id="txt_traumas_perm" style="min-height:190px;"></textarea></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Descrição Pessoal</div>
+          <div class="panel-body"><textarea class="tall-textarea" id="txt_desc_pessoal" style="min-height:120px;"></textarea></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">História</div>
+          <div class="panel-body"><textarea class="tall-textarea xl" id="txt_historia"></textarea></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       FICHA DE CRIATURA — ABA 1
+  ══════════════════════════════════════════ -->
+  <div class="tab-page creature-page" id="ctab-0" style="display:none;">
+    <div class="main-grid">
+
+      <!-- COLUNA ESQUERDA: Aptidões -->
+      <div class="aptidoes-col">
+        <div class="col-label">Aptidões</div>
+        <div style="display:grid;grid-template-columns:1fr 44px 52px;font-family:var(--ff-head);font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);padding:0 8px 4px;border-bottom:1px solid var(--line);margin-bottom:2px;">
+          <span></span><span style="text-align:center;">Valor</span><span style="text-align:center;">Crít.</span>
+        </div>
+        <div class="apt-item">
+          <div class="apt-label">Físico</div>
+          <div class="apt-ring"><input type="number" id="c_apt_fisico" min="0" max="6" oninput="recalcCreature()"></div>
+          <div class="apt-crit"><span class="apt-crit-label">Crítico</span><div class="crit-ring crit-display" id="c_apt_fisico_crit">—</div></div>
+        </div>
+        <div class="apt-item">
+          <div class="apt-label">Destreza</div>
+          <div class="apt-ring"><input type="number" id="c_apt_destreza" min="0" max="6" oninput="recalcCreatureCrit('c_apt_destreza')"></div>
+          <div class="apt-crit"><span class="apt-crit-label">Crítico</span><div class="crit-ring crit-display" id="c_apt_destreza_crit">—</div></div>
+        </div>
+        <div class="apt-item">
+          <div class="apt-label">Mental</div>
+          <div class="apt-ring"><input type="number" id="c_apt_mental" min="0" max="6" oninput="recalcCreatureCrit('c_apt_mental')"></div>
+          <div class="apt-crit"><span class="apt-crit-label">Crítico</span><div class="crit-ring crit-display" id="c_apt_mental_crit">—</div></div>
+        </div>
+        <div class="apt-item">
+          <div class="apt-label">Presença</div>
+          <div class="apt-ring"><input type="number" id="c_apt_presenca" min="0" max="6" oninput="recalcCreatureCrit('c_apt_presenca')"></div>
+          <div class="apt-crit"><span class="apt-crit-label">Crítico</span><div class="crit-ring crit-display" id="c_apt_presenca_crit">—</div></div>
+        </div>
+        <div class="apt-item">
+          <div class="apt-label">Alma</div>
+          <div class="apt-ring"><input type="number" id="c_apt_alma" min="0" max="6" oninput="recalcCreatureCrit('c_apt_alma')"></div>
+          <div class="apt-crit"><span class="apt-crit-label">Crítico</span><div class="crit-ring crit-display" id="c_apt_alma_crit">—</div></div>
+        </div>
+      </div>
+
+      <!-- COLUNA CENTRAL -->
+      <div class="center-col">
+
+        <!-- Tipo / Nome da Espécie -->
+        <div class="occ-row">
+          <div class="field-group">
+            <label>Tipo de Criatura</label>
+            <input type="text" id="c_tipo" oninput="autoSave()">
+          </div>
+          <div class="field-group">
+            <label>Origem / Localização</label>
+            <input type="text" id="c_origem" oninput="autoSave()">
+          </div>
+        </div>
+
+        <!-- ND -->
+        <div>
+          <div class="deco-divider">
+            <span>✦</span>
+            <span class="deco-label">Características</span>
+            <span>✦</span>
+          </div>
+          <div class="nd-row">
+            <div class="nd-box">
+              <div class="nd-label">ND</div>
+              <div class="nd-square"><input type="number" id="c_nd" min="0" oninput="autoSave()"></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div class="estado-box" style="border:1px solid rgba(160,35,35,0.25);">
+                <div class="estado-title">Pontos de Carne</div>
+                <div class="estado-inputs">
+                  <input type="number" id="c_carne_atual" class="carne-atual" min="0" oninput="autoSave()">
+                  <span class="estado-sep">/</span>
+                  <input type="number" id="c_carne_total" min="0" oninput="autoSave()">
+                </div>
+                <div class="estado-labels"><span>Atual</span><span></span><span>Total</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pontos Corrompidos (editável) -->
+        <div class="pontos-box corrompidos" style="border:1px solid rgba(100,50,100,0.3);padding:11px;text-align:center;position:relative;">
+          <div class="pontos-box::before" style="display:none;"></div>
+          <div class="pontos-title">Pontos Corrompidos</div>
+          <div class="estado-inputs">
+            <input type="number" id="c_corrompidos_atual" class="corrompidos-editavel" min="0" oninput="autoSave()">
+            <span class="estado-sep">/</span>
+            <input type="number" id="c_corrompidos_total" class="corrompidos-editavel" min="0" oninput="autoSave()">
+          </div>
+          <div class="estado-labels"><span>Atual</span><span></span><span>Total</span></div>
+        </div>
+
+        <!-- Nível de Choque -->
+        <div class="choque-panel panel-body">
+          <div class="choque-title">⚡ Perturbação</div>
+          <div class="panel-body">
+            <div class="choque-grid">
+              <div class="choque-item">
+                <label>TA para Resistir</label>
+                <input type="number" id="c_choque_ta" min="0" oninput="autoSave()" placeholder="Ex: 3">
+              </div>
+              <div class="choque-item">
+                <label>Trauma Temporário Concedido</label>
+                <textarea id="c_choque_trauma" style="min-height:60px;font-size:11px;line-height:1.5;padding:5px;" oninput="autoSave()" placeholder="Descreva o trauma temporário..."></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Fraquezas -->
+        <div class="panel">
+          <div class="panel-title">Fraquezas</div>
+          <div class="panel-body"><textarea class="tall-textarea" id="c_fraquezas" oninput="autoSave()" placeholder="Liste as fraquezas da criatura..."></textarea></div>
+        </div>
+
+        <!-- Descrição -->
+        <div class="panel">
+          <div class="panel-title">Descrição da Criatura</div>
+          <div class="panel-body"><textarea class="tall-textarea xl" id="c_descricao" oninput="autoSave()"></textarea></div>
+        </div>
+
+      </div><!-- /center-col -->
+
+      <!-- COLUNA DIREITA -->
+      <div class="right-col">
+        <div class="panel">
+          <div class="panel-title">Resistências</div>
+          <div class="panel-body">
+            <div class="res-group">
+              <div class="res-group-title">Defensivas</div>
+              <div class="res-item"><label>Bloqueio</label><input type="number" id="c_res_bloqueio" min="0" max="6" oninput="autoSave()"></div>
+              <div class="res-item"><label>Esquiva</label><input type="number" id="c_res_esquiva" min="0" max="6" oninput="autoSave()"></div>
+              <div class="res-item"><label>Revidar</label><input type="number" id="c_res_revidar" min="0" max="6" oninput="autoSave()"></div>
+            </div>
+            <div class="res-group">
+              <div class="res-group-title">Férreas</div>
+              <div class="res-item"><label>Constituição</label><input type="number" id="c_res_constituicao" min="0" max="6" oninput="autoSave()"></div>
+              <div class="res-item"><label>Emocional</label><input type="number" id="c_res_emocional" min="0" max="6" oninput="autoSave()"></div>
+              <div class="res-item"><label>Resist. Obscura</label><input type="number" id="c_res_obscura" min="0" max="6" oninput="autoSave()"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">Técnicas</div>
+          <div class="panel-body" id="c-tecnicas-body"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CRIATURA ABA 2 — AÇÕES & HABILIDADES ══ -->
+  <div class="tab-page creature-page" id="ctab-1" style="display:none;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start;">
+
+      <!-- Ataques e Ações -->
+      <div>
+        <div class="panel" style="margin-bottom:16px;">
+          <div class="panel-title">Ataques & Ações</div>
+          <div class="panel-body">
+            <div id="acoes-list"></div>
+            <div class="acoes-add-row">
+              <button class="btn-add-acao" onclick="addAcao('ataque')">+ Ataque</button>
+              <button class="btn-add-acao" onclick="addAcao('acao-comum')">+ Ação Comum</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Habilidades -->
+      <div>
+        <div class="panel">
+          <div class="panel-title">Habilidades da Criatura</div>
+          <div class="panel-body">
+            <div id="habilidades-list"></div>
+            <div class="acoes-add-row">
+              <button class="btn-add-acao gold" onclick="addAcao('habilidade')">+ Habilidade</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /screen-sheet -->
+
+<!-- MODAL: Novo Personagem -->
+<div class="modal-overlay" id="modal-new-char">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-title-text">✦ Novo Sobrevivente</div>
+    <!-- Seletor de tipo -->
+    <div style="display:flex;gap:8px;margin-bottom:20px;">
+      <button class="modal-type-btn active" id="modal-type-survivor" onclick="setModalType('survivor')">Sobrevivente</button>
+      <button class="modal-type-btn" id="modal-type-creature" onclick="setModalType('creature')">Criatura</button>
+    </div>
+    <div class="modal-field">
+      <label id="modal-name-label">Nome do Personagem</label>
+      <input type="text" id="modal-char-name" placeholder="Ex: Morgana Rocha" autocomplete="off">
+    </div>
+    <div class="modal-field" id="modal-player-field">
+      <label>Nome do Jogador</label>
+      <input type="text" id="modal-player-name" placeholder="Ex: João" autocomplete="off">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="btn-modal-cancel">Cancelar</button>
+      <button class="btn-primary" id="btn-modal-create">Criar Sobrevivente</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Imagem de Perfil -->
+<div class="modal-overlay" id="modal-crop">
+  <div class="modal-box" style="max-width:520px;">
+    <div class="modal-title">✦ Ajustar Imagem de Perfil</div>
+    <p style="font-size:11px;color:var(--text-dim);margin-bottom:14px;letter-spacing:1px;">Arraste e use o scroll (ou slider) para posicionar.</p>
+    <div id="crop-container" style="position:relative;width:100%;height:340px;overflow:hidden;background:#0a0608;border:1px solid var(--panel-border);cursor:grab;">
+      <img id="crop-img" style="position:absolute;max-width:none;user-select:none;-webkit-user-drag:none;">
+      <div id="crop-circle" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:200px;height:200px;border-radius:50%;border:2px solid var(--red-bright);box-shadow:0 0 0 9999px rgba(0,0,0,0.65);pointer-events:none;z-index:2;"></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:12px;">
+      <span style="font-size:10px;letter-spacing:2px;color:var(--text-dim);font-family:var(--ff-head);">ZOOM</span>
+      <input type="range" id="crop-zoom" min="0.2" max="4" step="0.01" value="1" style="flex:1;accent-color:var(--red);">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeCropModal()">Cancelar</button>
+      <button class="btn-primary" onclick="applyCrop()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Sync GitHub Gist -->
+<div class="modal-overlay" id="modal-sync">
+  <div class="modal-box" style="max-width:480px;">
+    <div class="modal-title">&#9729; Sincronização via GitHub Gist</div>
+    <p style="font-size:11px;color:var(--text-dim);margin-bottom:18px;line-height:1.7;letter-spacing:0.5px;">Sincronize suas fichas entre dispositivos usando um Gist privado do GitHub. Seu token fica somente neste navegador.</p>
+    <div id="sync-status-box" style="display:flex;align-items:center;gap:10px;padding:11px 14px;border:1px solid var(--panel-border);margin-bottom:16px;background:rgba(255,255,255,0.02);">
+      <div id="sync-status-dot" style="width:8px;height:8px;border-radius:50%;background:var(--text-dim);flex-shrink:0;box-shadow:none;transition:background .3s,box-shadow .3s;"></div>
+      <span id="sync-status-text" style="font-family:var(--ff-head);font-size:10px;letter-spacing:2px;color:var(--text-dim);">NAO CONFIGURADO</span>
+      <span id="sync-status-time" style="font-size:10px;color:var(--text-dim);margin-left:auto;opacity:0.5;"></span>
+    </div>
+    <div id="sync-token-section">
+      <label style="font-family:var(--ff-head);font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text-dim);display:block;margin-bottom:6px;">GitHub Personal Access Token</label>
+      <input type="password" id="sync-token-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" style="width:100%;background:rgba(255,255,255,0.03);border:1px solid var(--panel-border);border-bottom:1px solid var(--line);color:var(--text-bright);font-family:var(--ff-body);font-size:13px;padding:8px 10px;margin-bottom:8px;">
+      <p style="font-size:10px;color:var(--text-dim);margin-bottom:12px;line-height:1.6;">Crie em <strong style="color:var(--text)">github.com &rarr; Settings &rarr; Developer settings &rarr; Personal access tokens</strong> com permissao de <strong style="color:var(--text)">Gists (read+write)</strong>.</p>
+      <div id="sync-fetch-status" style="font-size:11px;margin-bottom:10px;display:none;padding:8px 10px;border:1px solid var(--panel-border);"></div>
+    </div>
+    <div id="sync-devices-section" style="display:none;margin-bottom:14px;">
+      <div style="font-family:var(--ff-head);font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;">Dispositivos Conectados</div>
+      <div id="sync-devices-list" style="display:flex;flex-direction:column;gap:6px;"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;gap:8px;">
+        <button class="btn-secondary" onclick="closeSyncModal()" style="flex:1;">Fechar</button>
+        <button class="btn-primary" id="sync-connect-btn" onclick="connectSync()" style="flex:2;">Conectar e Sincronizar</button>
+      </div>
+      <button class="btn-secondary" id="sync-disconnect-btn" onclick="disconnectSync()" style="display:none;color:#ff4444;border-color:rgba(180,30,30,0.4);">Desconectar do Gist</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+<input type="file" id="file-import" accept=".json" style="display:none">
+
+<script>
+/* ════════════════════════════════════════════════════
+   CONSTANTES E ESTADO
+════════════════════════════════════════════════════ */
+const STORE_KEY = 'honorda_chars_v3';
+const CHAR_PREFIX = 'honorda_char_v3_';
+
+// Técnicas que começam em 0
+const TECNICAS_ZERO = new Set(['Arte','Ciências','Linguagem','Pilotagem','Tecnologia','Poder','Religião']);
+
+const TECNICAS = [
+  "Acrobacia","Adestramento","Analisar","Armas Brancas","Armas de Fogo",
+  "Arquearia","Arremesso","Arte","Atletismo","Ciências","Computação",
+  "Encontrar","Escutar","Furtividade","Intimidar","Intuição","Lábia",
+  "Lembrar","Linguagem","Lutar","Medicina","Percepção","Persuasão",
+  "Pilotagem","Poder","Religião","Sobrevivência","Tecnologia","Truques"
+];
+
+let currentCharId = null;
+let currentSheetType = 'survivor';
+let saveTimeout = null;
+
+/* ════════════════════════════════════════════════════
+   GERENCIAMENTO DE PERSONAGENS (INDEX)
+════════════════════════════════════════════════════ */
+function getCharList() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || []; }
+  catch(e) { return []; }
+}
+function saveCharList(list) {
+  localStorage.setItem(STORE_KEY, JSON.stringify(list));
+}
+function getCharData(id) {
+  try { return JSON.parse(localStorage.getItem(CHAR_PREFIX + id)) || {}; }
+  catch(e) { return {}; }
+}
+function saveCharData(id, data) {
+  localStorage.setItem(CHAR_PREFIX + id, JSON.stringify(data));
+  // Update summary in list
+  const list = getCharList();
+  const entry = list.find(c => c.id === id);
+  if (entry) {
+    entry.name = data.personagem_nome || entry.name;
+    entry.occ = data.ocupacao || '';
+    entry.fisico = data.apt_fisico || 0;
+    entry.mental = data.apt_mental || 0;
+    entry.alma = data.apt_alma || 0;
+    saveCharList(list);
+  }
+}
+function generateId() {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+}
+
+function renderIndex() {
+  const list = getCharList();
+  document.getElementById('agent-count').textContent = list.length;
+
+  const gridSurvivors = document.getElementById('grid-survivors');
+  const gridCreatures = document.getElementById('grid-creatures');
+  gridSurvivors.innerHTML = '';
+  gridCreatures.innerHTML = '';
+
+  const survivors = [];
+  const creatures = [];
+
+  list.forEach(char => {
+    const data = getCharData(char.id);
+    const isCreature = data.__sheetType === 'creature' || char.type === 'creature';
+    if (isCreature) creatures.push({ char, data });
+    else survivors.push({ char, data });
+  });
+
+  document.getElementById('count-survivors').textContent = survivors.length;
+  document.getElementById('count-creatures').textContent = creatures.length;
+
+  // Mostra/oculta seções vazias
+  document.getElementById('section-survivors').style.display = survivors.length === 0 && creatures.length > 0 ? 'none' : '';
+  document.getElementById('section-creatures').style.display = creatures.length === 0 ? 'none' : '';
+
+  if (list.length === 0) {
+    gridSurvivors.innerHTML = `<div class="empty-state">
+      <span class="empty-icon">☽</span>
+      <h3>Nenhuma Ficha Registrada</h3>
+      <p>O silêncio antecede o caos.<br>Crie seu primeiro personagem para começar.</p>
+    </div>`;
+    return;
+  }
+
+  function buildCard(char, data, i) {
+    const initial = (data.personagem_nome || char.name || '?').charAt(0).toUpperCase();
+    const card = document.createElement('div');
+    card.className = 'agent-card';
+    card.style.animationDelay = (i * 0.05) + 's';
+    card.style.cursor = 'pointer';
+
+    const dateStr = new Date(char.createdAt).toLocaleDateString('pt-BR');
+    const occ = data.ocupacao || char.occ || '—';
+    const fisico = data.apt_fisico !== undefined ? data.apt_fisico : '—';
+    const mental = data.apt_mental !== undefined ? data.apt_mental : '—';
+    const alma = data.apt_alma !== undefined ? data.apt_alma : '—';
+    const nome = data.personagem_nome || char.name || 'Sem nome';
+    const isCreature = data.__sheetType === 'creature' || char.type === 'creature';
+
+    const avatarHTML = data.__avatar
+      ? `<img class="card-avatar-img" src="${data.__avatar}" alt="${nome}">`
+      : `<div class="card-avatar">${initial}</div>`;
+
+    const statLabel1 = isCreature ? 'ND' : 'Físico';
+    const statLabel2 = isCreature ? 'Carne' : 'Mental';
+    const statLabel3 = 'Alma';
+    const statVal1 = isCreature ? (data.c_nd || '—') : fisico;
+    const statVal2 = isCreature ? (data.c_carne_total || '—') : mental;
+    const statVal3 = isCreature ? (data.c_apt_alma || '—') : alma;
+
+    card.innerHTML = `
+      <div class="card-header" style="cursor:pointer;">
+        ${avatarHTML}
+        <div class="card-info">
+          <div class="card-name">${nome}</div>
+          <div class="card-occ">${isCreature ? (data.c_tipo || '—') : occ}</div>
+          <div class="card-date">Criado em ${dateStr}</div>
+        </div>
+      </div>
+      <div class="card-stats" style="cursor:pointer;">
+        <div class="card-stat"><div class="card-stat-val">${statVal1}</div><div class="card-stat-lbl">${statLabel1}</div></div>
+        <div class="card-stat"><div class="card-stat-val">${statVal2}</div><div class="card-stat-lbl">${statLabel2}</div></div>
+        <div class="card-stat"><div class="card-stat-val">${statVal3}</div><div class="card-stat-lbl">${statLabel3}</div></div>
+      </div>
+      <div class="card-footer">
+        <span class="card-btn-open">Acessar Ficha →</span>
+        <button class="card-btn-del" title="Apagar personagem">⌫ Apagar</button>
+      </div>
+    `;
+
+    const charId = char.id;
+    card.querySelector('.card-header').addEventListener('click', () => openSheet(charId));
+    card.querySelector('.card-stats').addEventListener('click', () => openSheet(charId));
+    card.querySelector('.card-btn-open').addEventListener('click', () => openSheet(charId));
+    card.querySelector('.card-btn-del').addEventListener('click', (e) => {
+      e.stopPropagation();
+      deleteChar(charId, e);
+    });
+    card.addEventListener('click', (e) => {
+      if (!e.target.closest('.card-btn-del')) openSheet(charId);
+    });
+
+    return card;
+  }
+
+  survivors.forEach(({ char, data }, i) => gridSurvivors.appendChild(buildCard(char, data, i)));
+  creatures.forEach(({ char, data }, i) => gridCreatures.appendChild(buildCard(char, data, i)));
+}
+
+function openNewCharModal() {
+  document.getElementById('modal-new-char').classList.add('open');
+  setTimeout(() => document.getElementById('modal-char-name').focus(), 100);
+}
+function closeModal() {
+  document.getElementById('modal-new-char').classList.remove('open');
+  document.getElementById('modal-char-name').value = '';
+  document.getElementById('modal-player-name').value = '';
+  setModalType('survivor');
+}
+document.getElementById('modal-new-char').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+  if (e.key === 'Enter' && document.getElementById('modal-new-char').classList.contains('open')) createNewChar();
+});
+
+function createNewChar() {
+  const name = document.getElementById('modal-char-name').value.trim() || (modalCharType === 'creature' ? 'Criatura Sem Nome' : 'Sobrevivente Sem Nome');
+  const player = document.getElementById('modal-player-name').value.trim();
+  const id = generateId();
+  const list = getCharList();
+
+  list.unshift({ id, name, occ: '', createdAt: Date.now(), type: modalCharType });
+  saveCharList(list);
+
+  const initData = { personagem_nome: name, jogador_nome: player, __sheetType: modalCharType };
+
+  if (modalCharType === 'survivor') {
+    TECNICAS.forEach((t, i) => { initData[`tec_${i}`] = TECNICAS_ZERO.has(t) ? 0 : 1; });
+    initData.res_bloqueio = 1; initData.res_esquiva = 1; initData.res_revidar = 1;
+    initData.res_constituicao = 1; initData.res_emocional = 1; initData.res_obscura = 1;
+    initData.extremos_atual = 0; initData.extremos_total = 30; initData.corrompidos_atual = 0;
+  } else {
+    TECNICAS.forEach((t, i) => { initData[`c_tec_${i}`] = TECNICAS_ZERO.has(t) ? 0 : 1; });
+    initData.c_res_bloqueio = 1; initData.c_res_esquiva = 1; initData.c_res_revidar = 1;
+    initData.c_res_constituicao = 1; initData.c_res_emocional = 1; initData.c_res_obscura = 1;
+  }
+
+  saveCharData(id, initData);
+  closeModal();
+  openSheet(id);
+}
+
+function deleteChar(id, e) {
+  e.stopPropagation();
+  const list = getCharList();
+  const char = list.find(c => c.id === id);
+  if (!confirm(`Apagar o personagem "${char?.name || 'este sobrevivente'}"? Esta ação não pode ser desfeita.`)) return;
+  const newList = list.filter(c => c.id !== id);
+  saveCharList(newList);
+  localStorage.removeItem(CHAR_PREFIX + id);
+  renderIndex();
+  showToast('Sobrevivente apagado');
+}
+
+/* ════════════════════════════════════════════════════
+   NAVEGAÇÃO
+════════════════════════════════════════════════════ */
+function goToIndex() {
+  if (currentCharId) flushSave();
+  currentCharId = null;
+  document.getElementById('screen-sheet').style.display = 'none';
+  document.getElementById('screen-index').style.display = 'flex';
+  renderIndex();
+}
+
+function openSheet(id) {
+  currentCharId = id;
+  document.getElementById('screen-index').style.display = 'none';
+  document.getElementById('screen-sheet').style.display = 'block';
+  loadSheet(id);
+}
+
+/* ════════════════════════════════════════════════════
+   GERAÇÃO DINÂMICA
+════════════════════════════════════════════════════ */
+function buildDynamicElements() {
+  // Diamonds — max 20 slots (mental=6 → 8 + up to 12 bonus)
+  const diamondsRow = document.getElementById('diamonds-row');
+  diamondsRow.innerHTML = '';
+  for (let i = 1; i <= 20; i++) {
+    const d = document.createElement('div');
+    d.className = 'diamond-check';
+    d.dataset.id = `descontrole_${i}`;
+    d.dataset.slot = i;
+    d.addEventListener('click', () => {
+      d.classList.toggle('checked');
+      recalcCorrompidos();
+      schedSave();
+    });
+    diamondsRow.appendChild(d);
+  }
+
+  // Equipamentos
+  const equipTbody = document.getElementById('equip-tbody');
+  equipTbody.innerHTML = '';
+  for (let i = 1; i <= 12; i++) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input type="text" id="eq_nome_${i}"></td>
+      <td><input type="text" id="eq_efeito_${i}"></td>
+      <td><input type="text" id="eq_mat_${i}"></td>
+      <td><input type="number" id="eq_peso_${i}" style="width:100%"></td>
+    `;
+    equipTbody.appendChild(tr);
+  }
+
+  // Técnicas
+  const tecBody = document.getElementById('tecnicas-body');
+  tecBody.innerHTML = '';
+  TECNICAS.forEach((tec, idx) => {
+    const div = document.createElement('div');
+    div.className = 'tec-item';
+    div.innerHTML = `<label>${tec}</label><input type="number" id="tec_${idx}" min="0" max="6">`;
+    tecBody.appendChild(div);
+  });
+
+  // Traumas
+  const traumaList = document.getElementById('trauma-temp-list');
+  traumaList.innerHTML = '';
+  for (let i = 1; i <= 20; i++) {
+    const row = document.createElement('div');
+    row.className = 'trauma-row';
+    row.innerHTML = `
+      <input type="text" id="trauma_temp_${i}" placeholder="Descreva o trauma...">
+      <div class="trauma-toggle" data-id="trauma_temp_ativo_${i}"></div>
+    `;
+    traumaList.appendChild(row);
+    row.querySelector('.trauma-toggle').addEventListener('click', function() {
+      this.classList.toggle('checked');
+      schedSave();
+    });
+  }
+
+  // check-labels (sobrevivente + criatura)
+  document.querySelectorAll('.check-label').forEach(el => {
+    el.addEventListener('click', () => {
+      el.classList.toggle('checked');
+      schedSave();
+    });
+  });
+
+  // Essência dots
+  document.querySelectorAll('.essencia-dot').forEach(el => {
+    el.addEventListener('click', () => {
+      el.classList.toggle('checked');
+      schedSave();
+    });
+  });
+
+  // Técnicas da criatura
+  const cTecBody = document.getElementById('c-tecnicas-body');
+  if (cTecBody) {
+    cTecBody.innerHTML = '';
+    TECNICAS.forEach((tec, idx) => {
+      const div = document.createElement('div');
+      div.className = 'tec-item';
+      div.innerHTML = `<label>${tec}</label><input type="number" id="c_tec_${idx}" min="0" max="6">`;
+      cTecBody.appendChild(div);
+    });
+  }
+
+  // Fraquezas
+  const fraquezaList = document.getElementById('fraqueza-list');
+  if (fraquezaList) {
+    fraquezaList.innerHTML = '';
+    for (let i = 1; i <= 10; i++) {
+      const row = document.createElement('div');
+      row.className = 'fraqueza-row';
+      row.innerHTML = `<input type="text" id="c_fraqueza_${i}" placeholder="Descreva a fraqueza...">`;
+      fraquezaList.appendChild(row);
+    }
+  }
+}
+
+/* ════════════════════════════════════════════════════
+   CÁLCULOS AUTOMÁTICOS
+════════════════════════════════════════════════════ */
+function aptToCrit(val) {
+  const map = { 2: 'd4', 3: 'd6', 4: 'd8', 5: 'd10', 6: 'd12' };
+  return map[val] || '—';
+}
+
+function recalcCrit(aptId) {
+  const val = parseInt(document.getElementById(aptId)?.value) || 0;
+  const critEl = document.getElementById(aptId + '_crit');
+  if (!critEl) return;
+  const dado = aptToCrit(val);
+  critEl.textContent = dado;
+  critEl.classList.toggle('active', dado !== '—');
+  schedSave();
+}
+
+function recalcAllCrits() {
+  ['apt_fisico','apt_destreza','apt_mental','apt_presenca','apt_alma'].forEach(recalcCrit);
+}
+
+function recalcCreatureCrit(aptId) {
+  const val = parseInt(document.getElementById(aptId)?.value) || 0;
+  const critEl = document.getElementById(aptId + '_crit');
+  if (!critEl) return;
+  const dado = aptToCrit(val);
+  critEl.textContent = dado;
+  critEl.classList.toggle('active', dado !== '—');
+  schedSave();
+}
+
+function recalcCreature() {
+  ['c_apt_fisico','c_apt_destreza','c_apt_mental','c_apt_presenca','c_apt_alma'].forEach(recalcCreatureCrit);
+  schedSave();
+}
+
+function recalcAll() {
+  const fisico = parseInt(document.getElementById('apt_fisico').value) || 0;
+  const const_ = parseInt(document.getElementById('res_constituicao').value) || 0;
+
+  const carne = 6 + fisico + const_;
+  const energia = 8 + fisico;
+
+  document.getElementById('carne-formula').textContent = `6 + ${fisico} + ${const_} = ${carne}`;
+  document.getElementById('energia-formula').textContent = `8 + ${fisico} = ${energia}`;
+
+  // Apenas preenche o total se estiver vazio ou for o valor padrão (não editado manualmente)
+  const carneTotal = document.getElementById('carne_total');
+  const energiaTotal = document.getElementById('energia_total');
+  if (!carneTotal.dataset.manualEdit) carneTotal.value = carne;
+  if (!energiaTotal.dataset.manualEdit) energiaTotal.value = energia;
+
+  recalcCorrompidos();
+  recalcAllCrits();
+  schedSave();
+}
+
+function getMaxMarcas() {
+  const mental = parseInt(document.getElementById('apt_mental')?.value) || 0;
+  const bonus = parseInt(document.getElementById('descontrole_bonus_manual')?.value) || 0;
+  return 4 + Math.max(0, mental - 2) + bonus;
+}
+
+function recalcCorrompidos() {
+  const maxMarcas = getMaxMarcas();
+  // Atualiza visibilidade dos slots
+  document.querySelectorAll('.diamond-check').forEach(d => {
+    const slot = parseInt(d.dataset.slot);
+    if (slot <= maxMarcas) {
+      d.style.display = '';
+      d.style.pointerEvents = '';
+      d.style.opacity = '';
+    } else {
+      d.style.display = 'none';
+      d.classList.remove('checked'); // desmarca slots além do limite
+    }
+  });
+  const corrompidosMax = maxMarcas * 2;
+  document.getElementById('corrompidos_total').value = corrompidosMax;
+  document.getElementById('corrompidos-hint').textContent = `Máx. marcas: ${maxMarcas} × 2 = ${corrompidosMax}`;
+  schedSave();
+}
+
+// Marcar edição manual nos totais de Carne/Energia
+document.addEventListener('DOMContentLoaded', () => {
+  ['carne_total', 'energia_total'].forEach(id => {
+    document.getElementById(id).addEventListener('input', function() {
+      this.dataset.manualEdit = '1';
+    });
+  });
+});
+
+/* ════════════════════════════════════════════════════
+   TABS
+════════════════════════════════════════════════════ */
+document.querySelectorAll('.tab-btn:not(.creature-tab)').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const idx = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn:not(.creature-tab)').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-page:not(.creature-page)').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(`tab-${idx}`).classList.add('active');
+  });
+});
+
+document.querySelectorAll('.creature-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const idx = btn.dataset.ctab;
+    document.querySelectorAll('.creature-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.creature-page').forEach(p => { p.style.display = 'none'; });
+    btn.classList.add('active');
+    document.getElementById(`ctab-${idx}`).style.display = 'block';
+  });
+});
+
+/* ════════════════════════════════════════════════════
+   SALVAR / CARREGAR
+════════════════════════════════════════════════════ */
+function collectSheetData() {
+  const data = {};
+
+  // Inputs e textareas com id
+  document.querySelectorAll('#screen-sheet input[id], #screen-sheet textarea[id]').forEach(el => {
+    if (el.id) data[el.id] = el.value;
+  });
+
+  // Diamonds
+  document.querySelectorAll('.diamond-check').forEach(el => {
+    data[el.dataset.id] = el.classList.contains('checked');
+  });
+
+  // Essência
+  document.querySelectorAll('.essencia-dot').forEach(el => {
+    data[el.dataset.id] = el.classList.contains('checked');
+  });
+
+  // Check-labels (sobrevivente + criatura)
+  document.querySelectorAll('.check-label').forEach(el => {
+    if (el.dataset.id) data[el.dataset.id] = el.classList.contains('checked');
+  });
+
+  // Trauma toggles
+  document.querySelectorAll('.trauma-toggle').forEach(el => {
+    data[el.dataset.id] = el.classList.contains('checked');
+  });
+
+  // Manual edit flags
+  ['carne_total','energia_total'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el?.dataset.manualEdit) data['__manualEdit_' + id] = true;
+  });
+
+  // Avatar
+  const avatarImg = document.getElementById('profile-avatar-img');
+  if (avatarImg && avatarImg.src && avatarImg.style.display !== 'none') {
+    data['__avatar'] = avatarImg.src;
+  } else {
+    data['__avatar'] = '';
+  }
+
+  // Ações da criatura
+  data['__acoes'] = collectAcoes();
+
+  // Tipo de ficha
+  data['__sheetType'] = currentSheetType;
+
+  return data;
+}
+
+function loadSheet(id) {
+  const data = getCharData(id);
+
+  // Reset all inputs
+  document.querySelectorAll('#screen-sheet input[id], #screen-sheet textarea[id]').forEach(el => {
+    el.value = '';
+    delete el.dataset.manualEdit;
+  });
+  document.querySelectorAll('.diamond-check, .essencia-dot').forEach(el => el.classList.remove('checked'));
+  document.querySelectorAll('.check-label').forEach(el => el.classList.remove('checked'));
+  document.querySelectorAll('.trauma-toggle').forEach(el => el.classList.remove('checked'));
+
+  // Apply saved data
+  document.querySelectorAll('#screen-sheet input[id], #screen-sheet textarea[id]').forEach(el => {
+    if (data[el.id] !== undefined) el.value = data[el.id];
+  });
+
+  document.querySelectorAll('.diamond-check').forEach(el => {
+    if (data[el.dataset.id] === true) el.classList.add('checked');
+  });
+  document.querySelectorAll('.essencia-dot').forEach(el => {
+    if (data[el.dataset.id] === true) el.classList.add('checked');
+  });
+  document.querySelectorAll('.check-label').forEach(el => {
+    if (el.dataset.id && data[el.dataset.id] === true) el.classList.add('checked');
+  });
+  document.querySelectorAll('.trauma-toggle').forEach(el => {
+    if (data[el.dataset.id] === true) el.classList.add('checked');
+  });
+
+  // Restore manual edit flags
+  ['carne_total','energia_total'].forEach(id => {
+    if (data['__manualEdit_' + id]) {
+      const el = document.getElementById(id);
+      if (el) el.dataset.manualEdit = '1';
+    }
+  });
+
+  // Restore avatar
+  const avatarImg = document.getElementById('profile-avatar-img');
+  const placeholder = document.getElementById('profile-avatar-placeholder');
+  const removeBtn = document.getElementById('profile-avatar-remove');
+  if (data['__avatar']) {
+    avatarImg.src = data['__avatar'];
+    avatarImg.style.display = 'block';
+    placeholder.style.display = 'none';
+    removeBtn.style.display = 'block';
+  } else {
+    avatarImg.src = '';
+    avatarImg.style.display = 'none';
+    placeholder.style.display = 'flex';
+    removeBtn.style.display = 'none';
+  }
+
+  // Restore ações
+  restoreAcoes(data['__acoes'] || []);
+
+  // Sheet type
+  currentSheetType = data['__sheetType'] || 'survivor';
+  applySheetType(currentSheetType);
+
+  // Seed defaults for first survivor load if fields empty
+  const isFresh = !data.apt_fisico && !data.tec_0;
+  if (isFresh && currentSheetType === 'survivor') {
+    TECNICAS.forEach((t, i) => {
+      const el = document.getElementById(`tec_${i}`);
+      if (el && !el.value) el.value = TECNICAS_ZERO.has(t) ? 0 : 1;
+    });
+    ['res_bloqueio','res_esquiva','res_revidar','res_constituicao','res_emocional','res_obscura'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && !el.value) el.value = 1;
+    });
+    const ext = document.getElementById('extremos_total');
+    if (ext && !ext.value) ext.value = 30;
+  }
+
+  recalcAll();
+  recalcAllCrits();
+  recalcCreature();
+}
+
+function flushSave() {
+  if (!currentCharId) return;
+  clearTimeout(saveTimeout);
+  const data = collectSheetData();
+  saveCharData(currentCharId, data);
+}
+
+function schedSave() {
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(flushSave, 600);
+}
+
+function autoSave() { schedSave(); }
+
+// Auto-save on any input in sheet
+document.getElementById('screen-sheet').addEventListener('input', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+    const id = e.target.id;
+    if (['apt_fisico','res_constituicao'].includes(id)) recalcAll();
+    else if (['apt_destreza','apt_mental','apt_presenca','apt_alma'].includes(id)) {
+      recalcCrit(id);
+      if (id === 'apt_mental') recalcCorrompidos();
+    }
+    else if (['c_apt_fisico','c_apt_destreza','c_apt_mental','c_apt_presenca','c_apt_alma'].includes(id)) {
+      recalcCreatureCrit(id);
+    }
+    else if (id === 'descontrole_bonus_manual') recalcCorrompidos();
+    else schedSave();
+  }
+});
+
+/* ════════════════════════════════════════════════════
+   EXPORT / IMPORT
+════════════════════════════════════════════════════ */
+function exportSheet() {
+  if (!currentCharId) return;
+  flushSave();
+  const data = getCharData(currentCharId);
+  const name = data.personagem_nome || 'investigador';
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `honorda_${name.replace(/\s+/g,'_').toLowerCase()}.json`;
+  a.click();
+  showToast('Ficha exportada');
+}
+
+function importSheetFromIndex() {
+  document.getElementById('file-import').click();
+}
+
+document.getElementById('file-import').addEventListener('change', function() {
+  const file = this.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      const id = generateId();
+      const list = getCharList();
+      list.unshift({
+        id,
+        name: data.personagem_nome || 'Ficha Importada',
+        occ: data.ocupacao || '',
+        createdAt: Date.now(),
+        type: data.__sheetType || 'survivor'
+      });
+      saveCharList(list);
+      saveCharData(id, data);
+      renderIndex();
+      showToast('Ficha importada');
+      openSheet(id);
+    } catch {
+      showToast('Erro ao importar arquivo');
+    }
+  };
+  reader.readAsText(file);
+  this.value = '';
+});
+
+function deleteCurrentSheet() {
+  if (!currentCharId) return;
+  const data = getCharData(currentCharId);
+  const name = data.personagem_nome || 'este sobrevivente';
+  if (!confirm(`Apagar a ficha de "${name}"? Esta ação não pode ser desfeita.`)) return;
+  const list = getCharList().filter(c => c.id !== currentCharId);
+  saveCharList(list);
+  localStorage.removeItem(CHAR_PREFIX + currentCharId);
+  goToIndex();
+  showToast('Ficha apagada');
+}
+
+/* ════════════════════════════════════════════════════
+   TOAST
+════════════════════════════════════════════════════ */
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+/* ════════════════════════════════════════════════════
+   MODAL TYPE (Sobrevivente vs Criatura)
+════════════════════════════════════════════════════ */
+let modalCharType = 'survivor';
+
+function setModalType(type) {
+  modalCharType = type;
+  document.getElementById('modal-type-survivor').classList.toggle('active', type === 'survivor');
+  document.getElementById('modal-type-creature').classList.toggle('active', type === 'creature');
+  document.getElementById('modal-title-text').textContent = type === 'survivor' ? '✦ Novo Sobrevivente' : '✦ Nova Criatura';
+  document.getElementById('btn-modal-create').textContent = type === 'survivor' ? 'Criar Sobrevivente' : 'Criar Criatura';
+  document.getElementById('modal-name-label').textContent = type === 'survivor' ? 'Nome do Personagem' : 'Nome da Criatura';
+  document.getElementById('modal-player-field').style.display = type === 'survivor' ? '' : 'none';
+  document.getElementById('modal-char-name').placeholder = type === 'survivor' ? 'Ex: Morgana Rocha' : 'Ex: Aranha Sombria';
+}
+
+/* ════════════════════════════════════════════════════
+   AVATAR / IMAGEM DE PERFIL
+════════════════════════════════════════════════════ */
+let cropImgSrc = null;
+let cropX = 0, cropY = 0, cropZoom = 1;
+let cropDragging = false, cropStartX, cropStartY;
+let cropNaturalW, cropNaturalH;
+
+function triggerAvatarUpload() {
+  document.getElementById('avatar-file-input').click();
+}
+
+function onAvatarFileSelected(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    cropImgSrc = e.target.result;
+    openCropModal(cropImgSrc);
+  };
+  reader.readAsDataURL(file);
+  event.target.value = '';
+}
+
+function openCropModal(src) {
+  const modal = document.getElementById('modal-crop');
+  const img = document.getElementById('crop-img');
+  img.src = src;
+  img.onload = () => {
+    cropNaturalW = img.naturalWidth;
+    cropNaturalH = img.naturalHeight;
+    cropZoom = 1;
+    document.getElementById('crop-zoom').value = 1;
+    // Centraliza a imagem no container ao abrir
+    const container = document.getElementById('crop-container');
+    const cW = container.clientWidth;
+    const cH = container.clientHeight;
+    const baseScale = Math.min(cW / cropNaturalW, cH / cropNaturalH);
+    const dispW = cropNaturalW * baseScale;
+    const dispH = cropNaturalH * baseScale;
+    cropX = (cW - dispW) / 2;
+    cropY = (cH - dispH) / 2;
+    applyCropTransform();
+  };
+  modal.classList.add('open');
+  setupCropEvents();
+}
+
+function applyCropTransform() {
+  const container = document.getElementById('crop-container');
+  const img = document.getElementById('crop-img');
+  const cW = container.clientWidth;
+  const cH = container.clientHeight;
+  const baseScale = Math.min(cW / cropNaturalW, cH / cropNaturalH);
+  const scale = baseScale * cropZoom;
+  const dispW = cropNaturalW * scale;
+  const dispH = cropNaturalH * scale;
+  img.style.width = dispW + 'px';
+  img.style.height = dispH + 'px';
+  img.style.left = cropX + 'px';
+  img.style.top = cropY + 'px';
+}
+
+function setupCropEvents() {
+  const container = document.getElementById('crop-container');
+  const zoomSlider = document.getElementById('crop-zoom');
+
+  // Remove listeners antigos clonando o elemento
+  const newContainer = container.cloneNode(true);
+  container.parentNode.replaceChild(newContainer, container);
+  const img = document.getElementById('crop-img');
+
+  zoomSlider.oninput = () => {
+    // Mantém o centro visual fixo ao fazer zoom
+    const c = document.getElementById('crop-container');
+    const cW = c.clientWidth, cH = c.clientHeight;
+    const oldBase = Math.min(cW / cropNaturalW, cH / cropNaturalH);
+    const oldScale = oldBase * cropZoom;
+    cropZoom = parseFloat(zoomSlider.value);
+    const newScale = oldBase * cropZoom;
+    const ratio = newScale / oldScale;
+    cropX = cW / 2 - (cW / 2 - cropX) * ratio;
+    cropY = cH / 2 - (cH / 2 - cropY) * ratio;
+    applyCropTransform();
+  };
+
+  // Scroll wheel zoom
+  newContainer.addEventListener('wheel', e => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.08 : 0.08;
+    const newZoom = Math.min(4, Math.max(0.2, cropZoom + delta));
+    const c = document.getElementById('crop-container');
+    const cW = c.clientWidth, cH = c.clientHeight;
+    const baseScale = Math.min(cW / cropNaturalW, cH / cropNaturalH);
+    const oldScale = baseScale * cropZoom;
+    const newScale = baseScale * newZoom;
+    const ratio = newScale / oldScale;
+    cropX = cW / 2 - (cW / 2 - cropX) * ratio;
+    cropY = cH / 2 - (cH / 2 - cropY) * ratio;
+    cropZoom = newZoom;
+    zoomSlider.value = cropZoom;
+    applyCropTransform();
+  }, { passive: false });
+
+  // Drag — sem nenhum clamping, movimento livre
+  newContainer.addEventListener('mousedown', e => {
+    cropDragging = true;
+    cropStartX = e.clientX - cropX;
+    cropStartY = e.clientY - cropY;
+    newContainer.style.cursor = 'grabbing';
+    e.preventDefault();
+  });
+  window.addEventListener('mousemove', e => {
+    if (!cropDragging) return;
+    cropX = e.clientX - cropStartX;
+    cropY = e.clientY - cropStartY;
+    applyCropTransform();
+  });
+  window.addEventListener('mouseup', () => {
+    if (!cropDragging) return;
+    cropDragging = false;
+    const c = document.getElementById('crop-container');
+    if (c) c.style.cursor = 'grab';
+  });
+
+  // Touch
+  newContainer.addEventListener('touchstart', e => {
+    cropDragging = true;
+    cropStartX = e.touches[0].clientX - cropX;
+    cropStartY = e.touches[0].clientY - cropY;
+  });
+  newContainer.addEventListener('touchmove', e => {
+    if (!cropDragging) return;
+    cropX = e.touches[0].clientX - cropStartX;
+    cropY = e.touches[0].clientY - cropStartY;
+    applyCropTransform();
+    e.preventDefault();
+  }, { passive: false });
+  newContainer.addEventListener('touchend', () => { cropDragging = false; });
+}
+
+function closeCropModal() {
+  cropDragging = false;
+  document.getElementById('modal-crop').classList.remove('open');
+}
+
+function applyCrop() {
+  const container = document.getElementById('crop-container');
+  const img = document.getElementById('crop-img');
+  const cW = container.clientWidth;
+  const cH = container.clientHeight;
+
+  const circleSize = 200;
+  const circleX = (cW - circleSize) / 2;
+  const circleY = (cH - circleSize) / 2;
+
+  const baseScale = Math.min(cW / cropNaturalW, cH / cropNaturalH);
+  const scale = baseScale * cropZoom;
+
+  const sx = (circleX - cropX) / scale;
+  const sy = (circleY - cropY) / scale;
+  const sw = circleSize / scale;
+  const sh = circleSize / scale;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 200; canvas.height = 200;
+  const ctx = canvas.getContext('2d');
+  ctx.beginPath();
+  ctx.arc(100, 100, 100, 0, Math.PI * 2);
+  ctx.clip();
+  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, 200, 200);
+
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+  setAvatarImage(dataUrl);
+  closeCropModal();
+}
+
+function setAvatarImage(dataUrl) {
+  const imgEl = document.getElementById('profile-avatar-img');
+  const placeholder = document.getElementById('profile-avatar-placeholder');
+  const removeBtn = document.getElementById('profile-avatar-remove');
+  imgEl.src = dataUrl;
+  imgEl.style.display = 'block';
+  placeholder.style.display = 'none';
+  removeBtn.style.display = 'block';
+  schedSave();
+}
+
+function removeAvatar() {
+  const imgEl = document.getElementById('profile-avatar-img');
+  const placeholder = document.getElementById('profile-avatar-placeholder');
+  const removeBtn = document.getElementById('profile-avatar-remove');
+  imgEl.src = '';
+  imgEl.style.display = 'none';
+  placeholder.style.display = 'flex';
+  removeBtn.style.display = 'none';
+  schedSave();
+}
+
+/* ════════════════════════════════════════════════════
+   AÇÕES DA CRIATURA
+════════════════════════════════════════════════════ */
+let acaoCounter = 0;
+
+function addAcao(type) {
+  const id = ++acaoCounter;
+  const listId = (type === 'habilidade') ? 'habilidades-list' : 'acoes-list';
+  const list = document.getElementById(listId);
+
+  const card = document.createElement('div');
+  card.className = `acao-card ${type}`;
+  card.dataset.acaoId = id;
+  card.dataset.acaoType = type;
+
+  const typeLabel = type === 'ataque' ? 'Ataque' : type === 'acao-comum' ? 'Ação Comum' : 'Habilidade';
+  const typeClass = type === 'ataque' ? 'ataque' : type === 'acao-comum' ? 'acao-comum' : 'habilidade';
+
+  let extraFields = '';
+  if (type === 'ataque') {
+    extraFields = `
+      <div class="acao-field-row"><span class="acao-field-label">Aptidão</span><input class="acao-field-input" type="text" id="acao_apt_${id}" placeholder="Ex: Físico com Lutar"></div>
+      <div class="acao-field-row"><span class="acao-field-label">Ações</span><input class="acao-field-input" type="text" id="acao_acoes_${id}" placeholder="Ex: 1 Ação Útil"></div>
+      <div class="acao-field-row"><span class="acao-field-label">Dano</span><input class="acao-field-input" type="text" id="acao_dano_${id}" placeholder="Ex: 1d6+2"></div>
+      <div class="acao-field-row"><span class="acao-field-label">Efeito</span><input class="acao-field-input" type="text" id="acao_efeito_${id}" placeholder="Efeito adicional (opcional)"></div>`;
+  } else if (type === 'acao-comum') {
+    extraFields = `
+      <div class="acao-field-row"><span class="acao-field-label">Aptidão</span><input class="acao-field-input" type="text" id="acao_apt_${id}" placeholder="Ex: Físico com Lutar"></div>
+      <div class="acao-field-row"><span class="acao-field-label">Ações</span><input class="acao-field-input" type="text" id="acao_acoes_${id}" placeholder="Ex: 2 Ações Úteis"></div>
+      <div class="acao-field-row"><span class="acao-field-label">Efeito</span><textarea class="acao-field-input" id="acao_efeito_${id}" style="min-height:50px;" placeholder="Descreva o efeito..."></textarea></div>`;
+  } else {
+    extraFields = `
+      <div class="acao-field-row"><span class="acao-field-label">Ações</span><input class="acao-field-input" type="text" id="acao_acoes_${id}" placeholder="Ex: Passiva / 1 Ação Útil / 2 Rodadas"></div>
+      <div class="acao-field-row"><span class="acao-field-label">Efeito</span><textarea class="acao-field-input" id="acao_efeito_${id}" style="min-height:60px;" placeholder="Descreva o efeito da habilidade..."></textarea></div>`;
+  }
+
+  card.innerHTML = `
+    <div class="acao-card-header">
+      <span class="acao-type-tag ${typeClass}">${typeLabel}</span>
+      <input class="acao-name-input" type="text" id="acao_nome_${id}" placeholder="Nome da ação...">
+      <button class="acao-remove-btn" onclick="removeAcao(${id})">✕</button>
+    </div>
+    <div class="acao-fields">${extraFields}</div>`;
+
+  list.appendChild(card);
+  card.querySelectorAll('input, textarea').forEach(el => {
+    el.addEventListener('input', schedSave);
+  });
+  card.querySelector('.acao-name-input').focus();
+  schedSave();
+}
+
+function removeAcao(id) {
+  const card = document.querySelector(`[data-acao-id="${id}"]`);
+  if (card) { card.remove(); schedSave(); }
+}
+
+function collectAcoes() {
+  const acoes = [];
+  document.querySelectorAll('.acao-card').forEach(card => {
+    const id = card.dataset.acaoId;
+    const type = card.dataset.acaoType;
+    const entry = { id, type, nome: document.getElementById(`acao_nome_${id}`)?.value || '' };
+    const apt = document.getElementById(`acao_apt_${id}`);
+    const acoes_ = document.getElementById(`acao_acoes_${id}`);
+    const dano = document.getElementById(`acao_dano_${id}`);
+    const efeito = document.getElementById(`acao_efeito_${id}`);
+    if (apt) entry.apt = apt.value;
+    if (acoes_) entry.acoes = acoes_.value;
+    if (dano) entry.dano = dano.value;
+    if (efeito) entry.efeito = efeito.value;
+    acoes.push(entry);
+  });
+  return acoes;
+}
+
+function restoreAcoes(acoes) {
+  document.getElementById('acoes-list').innerHTML = '';
+  document.getElementById('habilidades-list').innerHTML = '';
+  acaoCounter = 0;
+  if (!acoes || !acoes.length) return;
+  acoes.forEach(entry => {
+    acaoCounter = Math.max(acaoCounter, parseInt(entry.id) || 0);
+    const listId = (entry.type === 'habilidade') ? 'habilidades-list' : 'acoes-list';
+    const list = document.getElementById(listId);
+    const card = document.createElement('div');
+    card.className = `acao-card ${entry.type}`;
+    card.dataset.acaoId = entry.id;
+    card.dataset.acaoType = entry.type;
+
+    const typeLabel = entry.type === 'ataque' ? 'Ataque' : entry.type === 'acao-comum' ? 'Ação Comum' : 'Habilidade';
+    const typeClass = entry.type === 'ataque' ? 'ataque' : entry.type === 'acao-comum' ? 'acao-comum' : 'habilidade';
+
+    let extraFields = '';
+    if (entry.type === 'ataque') {
+      extraFields = `
+        <div class="acao-field-row"><span class="acao-field-label">Aptidão</span><input class="acao-field-input" type="text" id="acao_apt_${entry.id}" placeholder="Ex: Físico com Lutar" value="${entry.apt||''}"></div>
+        <div class="acao-field-row"><span class="acao-field-label">Ações</span><input class="acao-field-input" type="text" id="acao_acoes_${entry.id}" placeholder="Ex: 1 Ação Útil" value="${entry.acoes||''}"></div>
+        <div class="acao-field-row"><span class="acao-field-label">Dano</span><input class="acao-field-input" type="text" id="acao_dano_${entry.id}" placeholder="Ex: 1d6+2" value="${entry.dano||''}"></div>
+        <div class="acao-field-row"><span class="acao-field-label">Efeito</span><input class="acao-field-input" type="text" id="acao_efeito_${entry.id}" placeholder="Efeito adicional (opcional)" value="${entry.efeito||''}"></div>`;
+    } else if (entry.type === 'acao-comum') {
+      extraFields = `
+        <div class="acao-field-row"><span class="acao-field-label">Aptidão</span><input class="acao-field-input" type="text" id="acao_apt_${entry.id}" placeholder="Ex: Físico com Lutar" value="${entry.apt||''}"></div>
+        <div class="acao-field-row"><span class="acao-field-label">Ações</span><input class="acao-field-input" type="text" id="acao_acoes_${entry.id}" placeholder="Ex: 2 Ações Úteis" value="${entry.acoes||''}"></div>
+        <div class="acao-field-row"><span class="acao-field-label">Efeito</span><textarea class="acao-field-input" id="acao_efeito_${entry.id}" style="min-height:50px;">${entry.efeito||''}</textarea></div>`;
+    } else {
+      extraFields = `
+        <div class="acao-field-row"><span class="acao-field-label">Ações</span><input class="acao-field-input" type="text" id="acao_acoes_${entry.id}" placeholder="Ex: Passiva / 1 Ação Útil / 2 Rodadas" value="${entry.acoes||''}"></div>
+        <div class="acao-field-row"><span class="acao-field-label">Efeito</span><textarea class="acao-field-input" id="acao_efeito_${entry.id}" style="min-height:60px;">${entry.efeito||''}</textarea></div>`;
+    }
+
+    card.innerHTML = `
+      <div class="acao-card-header">
+        <span class="acao-type-tag ${typeClass}">${typeLabel}</span>
+        <input class="acao-name-input" type="text" id="acao_nome_${entry.id}" placeholder="Nome da ação..." value="${entry.nome||''}">
+        <button class="acao-remove-btn" onclick="removeAcao(${entry.id})">✕</button>
+      </div>
+      <div class="acao-fields">${extraFields}</div>`;
+    list.appendChild(card);
+    card.querySelectorAll('input, textarea').forEach(el => {
+      el.addEventListener('input', schedSave);
+    });
+  });
+}
+
+/* ════════════════════════════════════════════════════
+   TIPO DE FICHA (Sobrevivente vs Criatura)
+════════════════════════════════════════════════════ */
+function applySheetType(type) {
+  const isSurvivor = (type !== 'creature');
+  document.getElementById('sheet-tab-nav').style.display = isSurvivor ? '' : 'none';
+  document.getElementById('creature-tab-nav').style.display = isSurvivor ? 'none' : '';
+
+  // Hide/show survivor pages
+  ['tab-0','tab-1','tab-2'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = isSurvivor ? '' : 'none';
+  });
+  // Hide/show creature pages
+  document.querySelectorAll('.creature-page').forEach(el => {
+    el.style.display = isSurvivor ? 'none' : 'none'; // managed by creature tabs
+  });
+
+  if (!isSurvivor) {
+    // Activate first creature tab
+    document.querySelectorAll('.creature-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.creature-page').forEach(p => { p.style.display = 'none'; });
+    const firstBtn = document.querySelector('.creature-tab[data-ctab="0"]');
+    if (firstBtn) firstBtn.classList.add('active');
+    const firstPage = document.getElementById('ctab-0');
+    if (firstPage) firstPage.style.display = 'block';
+  } else {
+    // Activate first survivor tab
+    document.querySelectorAll('.tab-btn:not(.creature-tab)').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-page:not(.creature-page)').forEach(p => p.classList.remove('active'));
+    const firstBtn = document.querySelector('[data-tab="0"]');
+    if (firstBtn) firstBtn.classList.add('active');
+    const firstPage = document.getElementById('tab-0');
+    if (firstPage) firstPage.classList.add('active');
+  }
+}
+
+/* ════════════════════════════════════════════════════
+   GITHUB GIST SYNC
+════════════════════════════════════════════════════ */
+const GIST_TOKEN_KEY  = 'honorda_gist_token';
+const GIST_ID_KEY     = 'honorda_gist_id';
+const GIST_FILENAME   = 'honorda-fichas.json';
+const GIST_LAST_KEY   = 'honorda_gist_last_saved';
+const GIST_HASH_KEY   = 'honorda_gist_last_hash';
+const DEVICE_ID_KEY   = 'honorda_device_id';
+const DEVICES_REG_KEY = 'honorda_devices';
+const POLL_MS         = 4000;
+
+let gistIsSyncing  = false;
+let gistSyncTimer  = null;
+let gistPollTimer  = null;
+let gistLastETag   = '';
+let gistLastSavedAt = localStorage.getItem(GIST_LAST_KEY) || '';
+
+// ── Device identity ──
+function getDeviceId() {
+  let id = localStorage.getItem(DEVICE_ID_KEY);
+  if (!id) { id = 'dev_' + Date.now().toString(36) + Math.random().toString(36).substr(2,4); localStorage.setItem(DEVICE_ID_KEY, id); }
+  return id;
+}
+function getDeviceInfo() {
+  const ua = navigator.userAgent;
+  let browser = 'Browser', os = 'Unknown', dtype = 'desktop';
+  if (/Firefox/.test(ua)) browser = 'Firefox';
+  else if (/Edg\//.test(ua)) browser = 'Edge';
+  else if (/OPR\//.test(ua)) browser = 'Opera';
+  else if (/Chrome/.test(ua)) browser = 'Chrome';
+  else if (/Safari/.test(ua)) browser = 'Safari';
+  if (/Windows/.test(ua)) os = 'Windows';
+  else if (/Macintosh/.test(ua)) os = 'macOS';
+  else if (/Android/.test(ua)) { os = 'Android'; dtype = 'mobile'; }
+  else if (/iPhone/.test(ua)) { os = 'iPhone'; dtype = 'mobile'; }
+  else if (/iPad/.test(ua)) { os = 'iPad'; dtype = 'tablet'; }
+  else if (/Linux/.test(ua)) os = 'Linux';
+  const isPWA = !!(window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone);
+  return { id: getDeviceId(), name: browser + ' · ' + os, browser, os, deviceType: dtype, isPWA, lastSeen: new Date().toISOString() };
+}
+function loadDeviceReg() {
+  try { return JSON.parse(localStorage.getItem(DEVICES_REG_KEY) || '[]'); } catch { return []; }
+}
+function saveDeviceReg(list) { localStorage.setItem(DEVICES_REG_KEY, JSON.stringify(list)); }
+function registerDevice() {
+  const info = getDeviceInfo();
+  const list = loadDeviceReg();
+  const idx = list.findIndex(d => d.id === info.id);
+  if (idx >= 0) list[idx] = info; else list.push(info);
+  saveDeviceReg(list);
+  return list;
+}
+function mergeDeviceReg(remote) {
+  if (!Array.isArray(remote)) return;
+  const local = loadDeviceReg();
+  const map = Object.fromEntries(local.map(d => [d.id, d]));
+  remote.forEach(rd => { const ld = map[rd.id]; if (!ld || new Date(rd.lastSeen) > new Date(ld.lastSeen)) map[rd.id] = rd; });
+  const cur = getDeviceInfo(); map[cur.id] = cur;
+  saveDeviceReg(Object.values(map).sort((a,b) => new Date(b.lastSeen)-new Date(a.lastSeen)));
+}
+
+// ── Payload helpers ──
+function getGistToken()  { return localStorage.getItem(GIST_TOKEN_KEY) || ''; }
+function getGistId()     { return localStorage.getItem(GIST_ID_KEY) || ''; }
+
+function buildGistPayload() {
+  const devices = registerDevice();
+  // Collect all chars: list + each char data
+  const list = getCharList();
+  const chars = {};
+  list.forEach(c => { chars[c.id] = getCharData(c.id); });
+  return JSON.stringify({ list, chars, savedAt: new Date().toISOString(), savedBy: getDeviceId(), devices }, null, 2);
+}
+
+function buildDataHash() {
+  const list = getCharList().map(c => ({ id: c.id, name: c.name, type: c.type, updatedAt: c.updatedAt || '' })).sort((a,b) => a.id.localeCompare(b.id));
+  return JSON.stringify(list);
+}
+function hasUnpushed() { return buildDataHash() !== (localStorage.getItem(GIST_HASH_KEY) || ''); }
+function markPushed() { localStorage.setItem(GIST_HASH_KEY, buildDataHash()); }
+
+// ── Pull / Push ──
+async function pullFromGist(token, gistId) {
+  const headers = { Authorization: 'token ' + token };
+  if (gistLastETag) headers['If-None-Match'] = gistLastETag;
+  const res = await fetch('https://api.github.com/gists/' + gistId, { headers });
+  if (res.status === 304) return null;
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  const etag = res.headers.get('ETag');
+  if (etag) gistLastETag = etag;
+  const data = await res.json();
+  const content = data.files && data.files[GIST_FILENAME] && data.files[GIST_FILENAME].content;
+  if (!content) throw new Error('Arquivo nao encontrado no Gist');
+  return JSON.parse(content);
+}
+
+async function pushToGist(silent) {
+  const token = getGistToken(), gistId = getGistId();
+  if (!token) return;
+  if (!navigator.onLine) { setSyncDots('off'); return; }
+  if (gistId && !hasUnpushed()) { setSyncDots('ok'); return; }
+  setSyncDots('ing');
+  const payload = buildGistPayload();
+  try {
+    let res;
+    if (gistId) {
+      res = await fetch('https://api.github.com/gists/' + gistId, {
+        method: 'PATCH',
+        headers: { Authorization: 'token ' + token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ files: { [GIST_FILENAME]: { content: payload } } })
+      });
+    } else {
+      res = await fetch('https://api.github.com/gists', {
+        method: 'POST',
+        headers: { Authorization: 'token ' + token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ description: 'Honorda RPG Fichas', public: false, files: { [GIST_FILENAME]: { content: payload } } })
+      });
+    }
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (!gistId) { localStorage.setItem(GIST_ID_KEY, data.id); if (!silent) showToast('Gist criado com sucesso!'); }
+    const sent = JSON.parse(payload);
+    gistLastSavedAt = sent.savedAt;
+    localStorage.setItem(GIST_LAST_KEY, gistLastSavedAt);
+    markPushed();
+    gistLastETag = '';
+    setSyncDots('ok');
+  } catch(e) {
+    setSyncDots('err');
+    if (!silent) showToast('Erro ao enviar: ' + e.message);
+    throw e;
+  }
+}
+
+// ── Smart merge of chars ──
+function applyRemoteData(remote) {
+  if (!remote || !remote.list || !remote.chars) return false;
+  const localList = getCharList();
+  let changed = false;
+  // Merge list entries
+  const listMap = Object.fromEntries(localList.map(c => [c.id, c]));
+  remote.list.forEach(rc => {
+    const lc = listMap[rc.id];
+    if (!lc) {
+      // New char from remote
+      listMap[rc.id] = rc;
+      localStorage.setItem(CHAR_PREFIX + rc.id, JSON.stringify(remote.chars[rc.id] || {}));
+      changed = true;
+    } else {
+      // Compare updatedAt
+      const lt = new Date(lc.updatedAt || 0).getTime();
+      const rt = new Date(rc.updatedAt || 0).getTime();
+      if (rt > lt) {
+        listMap[rc.id] = { ...lc, ...rc };
+        localStorage.setItem(CHAR_PREFIX + rc.id, JSON.stringify(remote.chars[rc.id] || {}));
+        changed = true;
+      }
+    }
+  });
+  // Save merged list
+  const merged = Object.values(listMap).sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+  saveCharList(merged);
+  return changed;
+}
+
+// ── Full sync ──
+async function fullSync(silent) {
+  const token = getGistToken(), gistId = getGistId();
+  if (!token || gistIsSyncing || !navigator.onLine) return;
+  gistIsSyncing = true;
+  setSyncDots('ing');
+  try {
+    let needsPush = hasUnpushed();
+    if (gistId) {
+      const remote = await pullFromGist(token, gistId);
+      if (!remote) {
+        if (needsPush) await pushToGist(true);
+        else setSyncDots('ok');
+        return;
+      }
+      if (remote.devices) mergeDeviceReg(remote.devices);
+      if (remote.savedAt && remote.savedAt !== gistLastSavedAt) {
+        const changed = applyRemoteData(remote);
+        gistLastSavedAt = remote.savedAt;
+        localStorage.setItem(GIST_LAST_KEY, gistLastSavedAt);
+        if (changed) {
+          renderIndex();
+          // If current char was updated, reload it
+          if (currentCharId && remote.chars && remote.chars[currentCharId]) {
+            loadSheet(currentCharId);
+          }
+          if (!silent) showToast('Fichas atualizadas do Gist');
+          needsPush = true;
+        }
+      }
+    } else { needsPush = true; }
+    if (needsPush) await pushToGist(true);
+    else setSyncDots('ok');
+  } catch(e) {
+    setSyncDots('err');
+    console.error('Sync error:', e);
+  } finally { gistIsSyncing = false; }
+}
+
+function scheduleGistSync() {
+  if (!getGistToken()) return;
+  clearTimeout(gistSyncTimer);
+  gistSyncTimer = setTimeout(() => fullSync(true), 3500);
+}
+
+async function silentPoll() {
+  const token = getGistToken(), gistId = getGistId();
+  if (!token || !gistId || !navigator.onLine || gistIsSyncing) return;
+  try {
+    const remote = await pullFromGist(token, gistId);
+    if (!remote) return;
+    if (remote.devices) mergeDeviceReg(remote.devices);
+    if (remote.savedAt && remote.savedAt !== gistLastSavedAt) {
+      const changed = applyRemoteData(remote);
+      gistLastSavedAt = remote.savedAt;
+      localStorage.setItem(GIST_LAST_KEY, gistLastSavedAt);
+      if (changed) {
+        renderIndex();
+        if (currentCharId && remote.chars && remote.chars[currentCharId]) loadSheet(currentCharId);
+        showToast('Fichas sincronizadas em tempo real');
+        setSyncDots('ok');
+        await pushToGist(true);
+      }
+    }
+  } catch(e) { /* silencioso */ }
+}
+
+function startGistPolling() { silentPoll(); clearInterval(gistPollTimer); gistPollTimer = setInterval(silentPoll, POLL_MS); }
+function stopGistPolling()  { clearInterval(gistPollTimer); }
+
+function startSmartGistMonitor() {
+  const fn = () => { if (document.visibilityState === 'visible') { silentPoll(); startGistPolling(); } else stopGistPolling(); };
+  document.addEventListener('visibilitychange', fn);
+  window.addEventListener('focus', fn);
+  if (document.visibilityState === 'visible') { silentPoll(); startGistPolling(); }
+}
+
+window.addEventListener('online',  async () => { setSyncDots('ing'); await fullSync(true); startGistPolling(); });
+window.addEventListener('offline', () => { stopGistPolling(); if (getGistToken()) setSyncDots('off'); });
+
+// ── Sync UI dots ──
+function setSyncDots(state) {
+  const colors = { ok: '#4caf50', ing: '#f0a030', err: '#c0392b', off: 'var(--text-dim)' };
+  const shadows = { ok: '0 0 8px rgba(76,175,80,0.8)', ing: '0 0 8px rgba(240,160,48,0.8)', err: '0 0 8px rgba(192,57,43,0.8)', off: 'none' };
+  const c = colors[state] || colors.off;
+  const s = shadows[state] || 'none';
+  [document.getElementById('sync-dot-header'), document.getElementById('sync-dot-sheet')].forEach(el => {
+    if (el) { el.style.background = c; el.style.boxShadow = s; }
+  });
+  const dot = document.getElementById('sync-status-dot');
+  if (dot) { dot.style.background = c; dot.style.boxShadow = s; }
+  const labels = { ok: 'Sincronizado', ing: 'Sincronizando...', err: 'Erro', off: 'Offline' };
+  const lb = document.getElementById('sync-label-header');
+  if (lb) lb.textContent = labels[state] || 'Sync';
+  const stxt = document.getElementById('sync-status-text');
+  if (stxt) stxt.textContent = (labels[state] || 'Sync').toUpperCase();
+}
+
+// ── Connect flow ──
+async function connectSync() {
+  if (!navigator.onLine) return showToast('Sem conexao com a internet.');
+  const tokenInput = document.getElementById('sync-token-input');
+  const token = tokenInput.value.trim();
+  if (!token || token.startsWith('●')) return showToast('Insira um token valido.');
+  setSyncFetchStatus('loading', 'Verificando token...');
+  try {
+    const meRes = await fetch('https://api.github.com/user', { headers: { Authorization: 'token ' + token } });
+    if (!meRes.ok) throw new Error('Token invalido ou sem permissao');
+    localStorage.setItem(GIST_TOKEN_KEY, token);
+
+    let foundGistId = null;
+    setSyncFetchStatus('loading', 'Buscando Gist existente...');
+    for (let page = 1; page <= 3; page++) {
+      const lr = await fetch('https://api.github.com/gists?page=' + page + '&per_page=30', { headers: { Authorization: 'token ' + token } });
+      if (!lr.ok) break;
+      const gists = await lr.json();
+      const g = gists.find(x => x.files && x.files[GIST_FILENAME]);
+      if (g) { foundGistId = g.id; break; }
+      if (gists.length < 30) break;
+    }
+
+    if (foundGistId) {
+      localStorage.setItem(GIST_ID_KEY, foundGistId);
+      setSyncFetchStatus('loading', 'Importando fichas do Gist...');
+      const remote = await pullFromGist(token, foundGistId);
+      if (remote && remote.devices) mergeDeviceReg(remote.devices);
+      if (remote) {
+        const changed = applyRemoteData(remote);
+        gistLastSavedAt = remote.savedAt || '';
+        localStorage.setItem(GIST_LAST_KEY, gistLastSavedAt);
+        markPushed();
+        if (changed) { renderIndex(); showToast('Fichas importadas do Gist!'); }
+        else showToast('Conectado — fichas ja atualizadas.');
+      }
+    } else {
+      setSyncFetchStatus('loading', 'Criando novo Gist...');
+      await pushToGist(true);
+      showToast('Gist criado com suas fichas!');
+    }
+    setSyncFetchStatus('hidden', '');
+    updateSyncUI();
+    closeSyncModal();
+    startGistPolling();
+  } catch(e) {
+    setSyncFetchStatus('error', 'Erro: ' + e.message);
+  }
+}
+
+function disconnectSync() {
+  if (!confirm('Desconectar do Gist? Os dados locais serao mantidos.')) return;
+  localStorage.removeItem(GIST_TOKEN_KEY);
+  localStorage.removeItem(GIST_ID_KEY);
+  localStorage.removeItem(GIST_LAST_KEY);
+  localStorage.removeItem(GIST_HASH_KEY);
+  gistLastSavedAt = '';
+  stopGistPolling();
+  setSyncDots('off');
+  updateSyncUI();
+  closeSyncModal();
+  showToast('Desconectado do Gist.');
+}
+
+function setSyncFetchStatus(type, msg) {
+  const el = document.getElementById('sync-fetch-status');
+  if (!el) return;
+  if (type === 'hidden') { el.style.display = 'none'; return; }
+  el.style.display = 'block';
+  el.style.color = type === 'error' ? 'var(--red-bright)' : type === 'loading' ? 'var(--gold-light)' : 'var(--text-dim)';
+  el.style.borderColor = type === 'error' ? 'rgba(139,16,16,0.4)' : 'var(--panel-border)';
+  el.textContent = (type === 'loading' ? '⟳ ' : type === 'error' ? '✕ ' : '✓ ') + msg;
+}
+
+function timeAgoSync(iso) {
+  if (!iso) return '';
+  const d = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(d/60000);
+  if (m < 1) return 'agora mesmo';
+  if (m < 60) return m + ' min atras';
+  const h = Math.floor(m/60);
+  if (h < 24) return h + 'h atras';
+  return Math.floor(h/24) + 'd atras';
+}
+
+function updateSyncUI() {
+  const token = getGistToken();
+  const gistId = getGistId();
+  const connected = !!token;
+  const dot = document.getElementById('sync-status-dot');
+  const stxt = document.getElementById('sync-status-text');
+  const stime = document.getElementById('sync-status-time');
+  const connBtn = document.getElementById('sync-connect-btn');
+  const discBtn = document.getElementById('sync-disconnect-btn');
+  const devSec = document.getElementById('sync-devices-section');
+  const tokenSec = document.getElementById('sync-token-section');
+  if (connected) {
+    setSyncDots(navigator.onLine ? 'ok' : 'off');
+    if (stxt) stxt.textContent = navigator.onLine ? 'CONECTADO' : 'CONECTADO (OFFLINE)';
+    if (stime) stime.textContent = timeAgoSync(gistLastSavedAt);
+    if (connBtn) connBtn.textContent = 'Sincronizar Agora';
+    if (discBtn) discBtn.style.display = 'block';
+    if (devSec) devSec.style.display = 'block';
+    if (tokenSec) { document.getElementById('sync-token-input').value = '●●●●●●●●●●●●●●●'; }
+    renderSyncDevices();
+  } else {
+    setSyncDots('off');
+    if (stxt) stxt.textContent = 'NAO CONFIGURADO';
+    if (stime) stime.textContent = '';
+    if (connBtn) connBtn.textContent = 'Conectar e Sincronizar';
+    if (discBtn) discBtn.style.display = 'none';
+    if (devSec) devSec.style.display = 'none';
+    if (tokenSec) { document.getElementById('sync-token-input').value = ''; }
+  }
+}
+
+function renderSyncDevices() {
+  const list = loadDeviceReg();
+  const curId = getDeviceId();
+  const el = document.getElementById('sync-devices-list');
+  if (!el) return;
+  if (!list.length) { el.innerHTML = '<div style="font-size:11px;color:var(--text-dim);">Nenhum dispositivo registrado ainda.</div>'; return; }
+  list.sort((a,b) => { if (a.id===curId) return -1; if (b.id===curId) return 1; return new Date(b.lastSeen)-new Date(a.lastSeen); });
+  el.innerHTML = list.map(dev => {
+    const isCur = dev.id === curId;
+    const typeIcon = dev.deviceType === 'mobile' ? '📱' : dev.deviceType === 'tablet' ? '📟' : '🖥';
+    const pwaBadge = dev.isPWA ? ' <span style="font-size:8px;background:rgba(139,16,16,0.3);border:1px solid rgba(139,16,16,0.4);color:var(--red-bright);padding:1px 5px;letter-spacing:1px;">PWA</span>' : '';
+    const curBadge = isCur ? ' <span style="font-size:8px;background:rgba(154,112,32,0.2);border:1px solid rgba(154,112,32,0.4);color:var(--gold-light);padding:1px 5px;letter-spacing:1px;">ESTE</span>' : '';
+    return '<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid var(--panel-border);background:rgba(255,255,255,0.02);">'
+      + '<span style="font-size:16px;">' + typeIcon + '</span>'
+      + '<div style="flex:1;min-width:0;">'
+      + '<div style="font-size:11px;color:var(--text-bright);font-family:var(--ff-head);">' + (dev.name||'Desconhecido') + pwaBadge + curBadge + '</div>'
+      + '<div style="font-size:9px;color:var(--text-dim);margin-top:2px;">' + timeAgoSync(dev.lastSeen) + '</div>'
+      + '</div></div>';
+  }).join('');
+}
+
+// ── Sync modal open/close ──
+function openSyncModal() {
+  updateSyncUI();
+  setSyncFetchStatus('hidden', '');
+  document.getElementById('modal-sync').classList.add('open');
+}
+function closeSyncModal() {
+  document.getElementById('modal-sync').classList.remove('open');
+}
+document.getElementById('modal-sync').addEventListener('click', function(e) { if (e.target === this) closeSyncModal(); });
+
+// ── Hook into saveCharData to trigger sync ──
+const _origSaveCharData = saveCharData;
+saveCharData = function(id, data) {
+  // Track updatedAt
+  const list = getCharList();
+  const entry = list.find(c => c.id === id);
+  if (entry) entry.updatedAt = new Date().toISOString();
+  _origSaveCharData(id, data);
+  scheduleGistSync();
+};
+const _origSaveCharList = saveCharList;
+saveCharList = function(list) {
+  _origSaveCharList(list);
+};
+const _origDeleteChar = deleteChar;
+deleteChar = function(id, e) {
+  const result = _origDeleteChar(id, e);
+  scheduleGistSync();
+  return result;
+};
+
+/* ════════════════════════════════════════════════════
+   PWA — Service Worker & Manifest Inline
+════════════════════════════════════════════════════ */
+(function initPWA() {
+  // Inject manifest dynamically
+  const manifest = {
+    name: 'Honorda RPG',
+    short_name: 'Honorda',
+    description: 'Sistema de Fichas para RPG Dark Fantasy',
+    start_url: './',
+    display: 'standalone',
+    background_color: '#060608',
+    theme_color: '#060608',
+    orientation: 'any',
+    icons: [
+      { src: 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" fill="#060608"/><text x="96" y="130" font-size="120" text-anchor="middle" fill="#8b1010" font-family="serif">H</text></svg>'), sizes: '192x192', type: 'image/svg+xml' },
+      { src: 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#060608"/><text x="256" y="360" font-size="320" text-anchor="middle" fill="#8b1010" font-family="serif">H</text></svg>'), sizes: '512x512', type: 'image/svg+xml' }
+    ]
+  };
+  const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.getElementById('pwa-manifest');
+  if (link) link.href = url;
+
+  // Register service worker inline via blob
+  if ('serviceWorker' in navigator) {
+    const swCode = `
+const CACHE = 'honorda-v6';
+const URLS  = ['./', './honorda-v6.html'];
+self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(URLS)).then(() => self.skipWaiting())); });
+self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
+self.addEventListener('fetch', e => {
+  if (e.request.url.includes('api.github.com') || e.request.url.includes('fonts.google')) return;
+  e.respondWith(caches.open(CACHE).then(c => c.match(e.request).then(r => r || fetch(e.request).then(resp => { if (resp.ok && e.request.method === 'GET') c.put(e.request, resp.clone()); return resp; }))));
+});
+self.addEventListener('message', e => { if (e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting(); });
+    `;
+    const swBlob = new Blob([swCode], { type: 'application/javascript' });
+    const swUrl = URL.createObjectURL(swBlob);
+    navigator.serviceWorker.register(swUrl, { scope: './' }).then(reg => {
+      reg.onupdatefound = () => {
+        const w = reg.installing;
+        if (w) w.onstatechange = () => { if (w.state === 'installed' && navigator.serviceWorker.controller) w.postMessage({ type: 'SKIP_WAITING' }); };
+      };
+    }).catch(e => console.log('SW nao registrado:', e));
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => { if (!refreshing) { refreshing = true; /* silencioso */ } });
+  }
+})();
+
+/* ════════════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════════════ */
+document.getElementById('btn-import-index').addEventListener('click', importSheetFromIndex);
+document.getElementById('btn-new-char').addEventListener('click', openNewCharModal);
+document.getElementById('btn-back').addEventListener('click', goToIndex);
+document.getElementById('btn-export').addEventListener('click', exportSheet);
+document.getElementById('btn-delete-sheet').addEventListener('click', deleteCurrentSheet);
+document.getElementById('btn-modal-cancel').addEventListener('click', closeModal);
+document.getElementById('btn-modal-create').addEventListener('click', createNewChar);
+
+buildDynamicElements();
+renderIndex();
+setModalType('survivor');
+
+// Init gist sync
+(async function() {
+  const token = getGistToken();
+  if (!token) return;
+  if (!navigator.onLine) { setSyncDots('off'); return; }
+  await fullSync(true);
+  startSmartGistMonitor();
+})();
+if (getGistToken() && navigator.onLine) startSmartGistMonitor();
+
+console.log('%cHONORDA v6 — Sistema iniciado com Cloud Sync. Bem-vindo, Sobrevivente.', 'color:#8b1010;font-family:serif;font-size:13px;');
+</script>
+</body>
+</html>
