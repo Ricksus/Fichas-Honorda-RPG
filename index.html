@@ -3377,59 +3377,6 @@ async function fullSync(silent) {
   gistIsSyncing = true;
   setSyncDots('ing');
   try {
-    // 1. Checa se você tem alguma edição local pendente para enviar
-    let needsPush = hasUnpushed();
-    
-    if (gistId) {
-      const remote = await pullFromGist(token, gistId);
-      if (!remote) {
-        if (needsPush) await pushToGist(true);
-        else setSyncDots('ok');
-        return;
-      }
-      if (remote.devices) mergeDeviceReg(remote.devices);
-      
-      // 2. Se o Gist tem dados mais novos que os seus
-      if (remote.savedAt && remote.savedAt !== gistLastSavedAt) {
-        const changed = applyRemoteData(remote); // Junta as fichas sem esmagar
-        gistLastSavedAt = remote.savedAt;
-        localStorage.setItem(GIST_LAST_KEY, gistLastSavedAt);
-        
-        if (changed) {
-          renderIndex();
-          if (currentCharId && remote.chars && remote.chars[currentCharId]) {
-            loadSheet(currentCharId);
-          }
-          if (!silent) showToast('Fichas atualizadas do Gist!');
-          
-          // 3. O SEGREDO AQUI: Se você NÃO tinha alterações locais, seu site 
-          // apenas adotou as fichas da nuvem. Marcamos como "Sincronizado" 
-          // na memória para que ele NÃO reenvie os mesmos dados de volta pro Gist.
-          if (!needsPush) {
-            markPushed();
-          }
-        }
-      }
-    } else { 
-      needsPush = true; 
-    }
-    
-    // Só envia pacote para a nuvem se você tiver feito alguma edição!
-    if (needsPush) await pushToGist(true);
-    else setSyncDots('ok');
-    
-  } catch(e) {
-    setSyncDots('err');
-    console.error('Sync error:', e);
-  } finally { 
-    gistIsSyncing = false; 
-  }
-}
-  const token = getGistToken(), gistId = getGistId();
-  if (!token || gistIsSyncing || !navigator.onLine) return;
-  gistIsSyncing = true;
-  setSyncDots('ing');
-  try {
     let needsPush = hasUnpushed();
     if (gistId) {
       const remote = await pullFromGist(token, gistId);
