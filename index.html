@@ -56,7 +56,76 @@ body {
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--red); border-radius: 3px; }
+/* ══════════════════════════════════════════════════
+   BANNER DE INSTALAÇÃO PWA
+══════════════════════════════════════════════════ */
+#pwa-install-banner {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 9999;
+  background: linear-gradient(135deg, #0d0008 0%, #0a0608 100%);
+  border-top: 1px solid var(--panel-border);
+  box-shadow: 0 -8px 40px rgba(0,0,0,0.8), 0 -1px 0 rgba(139,16,16,0.4);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transform: translateY(100%);
+  transition: transform .4s cubic-bezier(0.16,1,0.3,1);
+  pointer-events: none;
+}
+#pwa-install-banner.visible {
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.pwa-banner-icon {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  background: radial-gradient(circle, rgba(100,20,20,0.8) 0%, rgba(30,5,5,0.9) 100%);
+  border: 1px solid rgba(139,16,16,0.5);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  box-shadow: 0 0 15px var(--red-glow);
+}
+.pwa-banner-text { flex: 1; min-width: 0; }
+.pwa-banner-title {
+  font-family: var(--ff-head);
+  font-size: 12px; font-weight: 700;
+  letter-spacing: 2px; color: var(--text-bright);
+  text-transform: uppercase;
+}
+.pwa-banner-sub {
+  font-size: 10px; color: var(--text-dim);
+  margin-top: 2px; letter-spacing: 0.5px;
+  line-height: 1.4;
+}
+.pwa-banner-install {
+  background: linear-gradient(135deg, #6b0000 0%, #3d0000 100%);
+  border: 1px solid var(--red);
+  color: var(--text-bright);
+  font-family: var(--ff-head);
+  font-size: 10px; letter-spacing: 2px;
+  padding: 9px 16px; cursor: pointer;
+  text-transform: uppercase; flex-shrink: 0;
+  transition: all .2s;
+}
+.pwa-banner-install:hover { box-shadow: 0 0 16px var(--red-glow); border-color: var(--red-bright); }
+.pwa-banner-dismiss {
+  background: none; border: none;
+  color: var(--text-dim); font-size: 18px;
+  cursor: pointer; padding: 4px 6px;
+  line-height: 1; transition: color .2s; flex-shrink: 0;
+}
+.pwa-banner-dismiss:hover { color: var(--text); }
 
+/* iOS share hint */
+.pwa-ios-hint {
+  font-size: 10px; color: var(--text-dim);
+  letter-spacing: 0.5px; line-height: 1.5;
+  margin-top: 2px;
+}
+.pwa-ios-hint strong { color: var(--text); }
 /* ══════════════════════════════════════════════════
    INPUTS GLOBAIS
 ══════════════════════════════════════════════════ */
@@ -1440,6 +1509,16 @@ input[type="checkbox"] { display: none; }
 }
 </style>
 </head>
+<!-- Banner de Instalação PWA -->
+<div id="pwa-install-banner">
+  <div class="pwa-banner-icon">☽</div>
+  <div class="pwa-banner-text">
+    <div class="pwa-banner-title">Instalar Honorda</div>
+    <div class="pwa-banner-sub" id="pwa-banner-sub">Acesso rápido, funciona offline.</div>
+  </div>
+  <button class="pwa-banner-install" id="pwa-banner-install-btn">Instalar</button>
+  <button class="pwa-banner-dismiss" id="pwa-banner-dismiss" title="Fechar">✕</button>
+</div>
 <body>
 
 <!-- ══════════════════════════════════════════════
@@ -3631,8 +3710,11 @@ deleteChar = function(id, e) {
 /* ════════════════════════════════════════════════════
    PWA — Service Worker & Manifest Inline
 ════════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════
+   PWA — Manifest, Service Worker & Install Prompt
+════════════════════════════════════════════════════ */
 (function initPWA() {
-  // Inject manifest dynamically
+  // ── Manifest com ícones corretamente declarados ──
   const manifest = {
     name: 'Honorda RPG',
     short_name: 'Honorda',
@@ -3643,41 +3725,130 @@ deleteChar = function(id, e) {
     theme_color: '#060608',
     orientation: 'any',
     icons: [
-      { src: 'hunurda192.png' },
-      { src: 'hunurda512.png' }
+      { src: 'hunurda192.png', sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
+      { src: 'hunurda512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
     ]
   };
   const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
-  const url = URL.createObjectURL(blob);
+  const manifestUrl = URL.createObjectURL(blob);
   const link = document.getElementById('pwa-manifest');
-  if (link) link.href = url;
+  if (link) link.href = manifestUrl;
 
-  // Register service worker inline via blob
+  // ── Service Worker ──
   if ('serviceWorker' in navigator) {
     const swCode = `
 const CACHE = 'honorda-v6';
 const URLS  = ['./', './honorda-v6.html'];
-self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(URLS)).then(() => self.skipWaiting())); });
-self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
-self.addEventListener('fetch', e => {
-  if (e.request.url.includes('api.github.com') || e.request.url.includes('fonts.google')) return;
-  e.respondWith(caches.open(CACHE).then(c => c.match(e.request).then(r => r || fetch(e.request).then(resp => { if (resp.ok && e.request.method === 'GET') c.put(e.request, resp.clone()); return resp; }))));
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(CACHE).then(c => {
+    return Promise.allSettled(URLS.map(u => c.add(u)));
+  }).then(() => self.skipWaiting()));
 });
-self.addEventListener('message', e => { if (e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting(); });
+self.addEventListener('activate', e => {
+  e.waitUntil(caches.keys().then(keys =>
+    Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+  ).then(() => self.clients.claim()));
+});
+self.addEventListener('fetch', e => {
+  if (e.request.url.includes('api.github.com') ||
+      e.request.url.includes('fonts.google') ||
+      e.request.url.includes('fonts.gstatic') ||
+      e.request.method !== 'GET') return;
+  e.respondWith(
+    caches.open(CACHE).then(c =>
+      c.match(e.request).then(r => r ||
+        fetch(e.request).then(resp => {
+          if (resp.ok) c.put(e.request, resp.clone());
+          return resp;
+        }).catch(() => r)
+      )
+    )
+  );
+});
+self.addEventListener('message', e => {
+  if (e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting();
+});
     `;
     const swBlob = new Blob([swCode], { type: 'application/javascript' });
     const swUrl = URL.createObjectURL(swBlob);
-    navigator.serviceWorker.register(swUrl, { scope: './' }).then(reg => {
+    navigator.serviceWorker.register(swUrl).then(reg => {
       reg.onupdatefound = () => {
         const w = reg.installing;
-        if (w) w.onstatechange = () => { if (w.state === 'installed' && navigator.serviceWorker.controller) w.postMessage({ type: 'SKIP_WAITING' }); };
+        if (w) w.onstatechange = () => {
+          if (w.state === 'installed' && navigator.serviceWorker.controller)
+            w.postMessage({ type: 'SKIP_WAITING' });
+        };
       };
-    }).catch(e => console.log('SW nao registrado:', e));
-    let refreshing = false;
-    navigator.serviceWorker.addEventListener('controllerchange', () => { if (!refreshing) { refreshing = true; /* silencioso */ } });
+    }).catch(e => console.log('SW não registrado:', e));
   }
-})();
 
+  // ── Install Prompt ──
+  const DISMISSED_KEY = 'honorda_pwa_dismissed';
+  const banner        = document.getElementById('pwa-install-banner');
+  const installBtn    = document.getElementById('pwa-banner-install-btn');
+  const dismissBtn    = document.getElementById('pwa-banner-dismiss');
+  const subText       = document.getElementById('pwa-banner-sub');
+
+  let deferredPrompt = null;
+
+  // Não mostra se já instalado ou já dispensado recentemente
+  function wasDismissedRecently() {
+    const ts = parseInt(localStorage.getItem(DISMISSED_KEY) || '0');
+    return Date.now() - ts < 3 * 24 * 60 * 60 * 1000; // 3 dias
+  }
+
+  function isStandalone() {
+    return window.matchMedia('(display-mode: standalone)').matches ||
+           window.navigator.standalone === true;
+  }
+
+  function showBanner() {
+    if (isStandalone() || wasDismissedRecently()) return;
+    setTimeout(() => banner.classList.add('visible'), 1500);
+  }
+
+  function hideBanner() {
+    banner.classList.remove('visible');
+  }
+
+  // Android / Chrome — evento nativo
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    subText.textContent = 'Acesso rápido, funciona offline.';
+    showBanner();
+  });
+
+  installBtn.addEventListener('click', async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      hideBanner();
+      if (outcome === 'accepted') showToast('Honorda instalado!');
+    }
+  });
+
+  dismissBtn.addEventListener('click', () => {
+    hideBanner();
+    localStorage.setItem(DISMISSED_KEY, Date.now().toString());
+  });
+
+  // iOS — Safari não dispara beforeinstallprompt
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isInSafari = /safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent);
+  if (isIOS && isInSafari && !isStandalone()) {
+    subText.innerHTML = 'Toque em <strong>Compartilhar ↑</strong> e depois <strong>"Tela de Início"</strong>.';
+    installBtn.style.display = 'none'; // iOS não tem API de install
+    showBanner();
+  }
+
+  // Confirma quando instalado
+  window.addEventListener('appinstalled', () => {
+    hideBanner();
+    showToast('Honorda instalado com sucesso!');
+  });
+})();
 /* ════════════════════════════════════════════════════
    INIT
 ════════════════════════════════════════════════════ */
