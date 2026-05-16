@@ -3145,28 +3145,35 @@ function applySheetType(type) {
 }
 
 /* ════════════════════════════════════════════════════
-   GITHUB GIST SYNC
+   GITHUB GIST SYNC (REAL-TIME SMART MERGE)
 ════════════════════════════════════════════════════ */
-const GIST_TOKEN_KEY  = 'honorda_gist_token';
-const GIST_ID_KEY     = 'honorda_gist_id';
-const GIST_FILENAME   = 'honorda-fichas.json';
-const GIST_LAST_KEY   = 'honorda_gist_last_saved';
-const GIST_HASH_KEY   = 'honorda_gist_last_hash';
-const DEVICE_ID_KEY   = 'honorda_device_id';
-const DEVICES_REG_KEY = 'honorda_devices';
-const POLL_MS         = 4000;
+const GIST_TOKEN_KEY    = 'honorda_gist_token';
+const GIST_ID_KEY       = 'honorda_gist_id';
+const GIST_FILENAME     = 'honorda-fichas.json';
+const GIST_LAST_KEY     = 'honorda_gist_last_saved';
+const GIST_HASH_KEY     = 'honorda_gist_last_hash';
+const DEVICE_ID_KEY     = 'honorda_device_id';
+const DEVICES_REG_KEY   = 'honorda_devices';
+const DELETED_CHARS_KEY = 'honorda_deleted_chars';
+const POLL_MS           = 4000;
 
-let gistIsSyncing  = false;
-let gistSyncTimer  = null;
-let gistPollTimer  = null;
-let gistLastETag   = '';
+let gistIsSyncing   = false;
+let gistSyncTimer   = null;
+let gistPollTimer   = null;
+let gistLastETag    = '';
 let gistLastSavedAt = localStorage.getItem(GIST_LAST_KEY) || '';
 
+// ── DEVICE IDENTITY & CONFLICTS ──
 function getDeviceId() {
   let id = localStorage.getItem(DEVICE_ID_KEY);
-  if (!id) { id = 'dev_' + Date.now().toString(36) + Math.random().toString(36).substr(2,4); localStorage.setItem(DEVICE_ID_KEY, id); }
+  if (!id) {
+    id = 'dev_' + Date.now().toString(36) + Math.random().toString(36).substr(2,4);
+    localStorage.setItem(DEVICE_ID_KEY, id);
+    localStorage.setItem('honorda_device_is_new', 'true');
+  }
   return id;
 }
+
 function getDeviceInfo() {
   const ua = navigator.userAgent;
   let browser = 'Browser', os = 'Unknown', dtype = 'desktop';
@@ -3184,10 +3191,12 @@ function getDeviceInfo() {
   const isPWA = !!(window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone);
   return { id: getDeviceId(), name: browser + ' · ' + os, browser, os, deviceType: dtype, isPWA, lastSeen: new Date().toISOString() };
 }
+
 function loadDeviceReg() {
   try { return JSON.parse(localStorage.getItem(DEVICES_REG_KEY) || '[]'); } catch { return []; }
 }
 function saveDeviceReg(list) { localStorage.setItem(DEVICES_REG_KEY, JSON.stringify(list)); }
+
 function registerDevice() {
   const info = getDeviceInfo();
   const list = loadDeviceReg();
@@ -3196,6 +3205,7 @@ function registerDevice() {
   saveDeviceReg(list);
   return list;
 }
+
 function mergeDeviceReg(remote) {
   if (!Array.isArray(remote)) return;
   const local = loadDeviceReg();
@@ -3203,6 +3213,29 @@ function mergeDeviceReg(remote) {
   remote.forEach(rd => { const ld = map[rd.id]; if (!ld || new Date(rd.lastSeen) > new Date(ld.lastSeen)) map[rd.id] = rd; });
   const cur = getDeviceInfo(); map[cur.id] = cur;
   saveDeviceReg(Object.values(map).sort((a,b) => new Date(b.lastSeen)-new Date(a.lastSeen)));
+  
+  // Confirmação se é um dispositivo já conhecido mas com ID recriado
+  if (localStorage.getItem('honorda_device_is_new') === 'true') {
+    const matches = remote.filter(d => d.id !== cur.id && d.name === cur.name).sort((a,b) => new Date(b.lastSeen) - new Date(a.lastSeen));
+    if (matches.length > 0) {
+       if (confirm(`Encontramos um histórico anterior deste dispositivo (${matches[0].name}). Deseja assumir a identidade dele para manter os logs corretos?`)) {
+          localStorage.setItem(DEVICE_ID_KEY, matches[0].id);
+       }
+    }
+    localStorage.removeItem('honorda_device_is_new');
+  }
+}
+
+// ── TOMBSTONES (Fichas Apagadas) ──
+function getDeletedChars() {
+  try { return JSON.parse(localStorage.getItem(DELETED_CHARS_KEY) || '[]'); } catch { return []; }
+}
+function markCharDeleted(id) {
+  const deleted = getDeletedChars();
+  if (!deleted.find(d => d.id === id)) {
+    deleted.push({ id, deletedAt: new Date().toISOString() });
+    localStorage.setItem(DELETED_CHARS_KEY, JSON.stringify(deleted));
+  }
 }
 
 function getGistToken()  { return localStorage.getItem(GIST_TOKEN_KEY) || ''; }
@@ -3211,14 +3244,16 @@ function getGistId()     { return localStorage.getItem(GIST_ID_KEY) || ''; }
 function buildGistPayload() {
   const devices = registerDevice();
   const list = getCharList();
+  const deleted = getDeletedChars();
   const chars = {};
   list.forEach(c => { chars[c.id] = getCharData(c.id); });
-  return JSON.stringify({ list, chars, savedAt: new Date().toISOString(), savedBy: getDeviceId(), devices }, null, 2);
+  return JSON.stringify({ list, chars, deleted, savedAt: new Date().toISOString(), savedBy: getDeviceId(), devices }, null, 2);
 }
 
 function buildDataHash() {
-  const list = getCharList().map(c => ({ id: c.id, name: c.name, type: c.type, updatedAt: c.updatedAt || '' })).sort((a,b) => a.id.localeCompare(b.id));
-  return JSON.stringify(list);
+  const listStr = getCharList().map(c => c.id + ':' + (c.updatedAt || c.createdAt)).join('|');
+  const delStr = getDeletedChars().map(d => d.id + ':' + d.deletedAt).join('|');
+  return listStr + '||' + delStr;
 }
 function hasUnpushed() { return buildDataHash() !== (localStorage.getItem(GIST_HASH_KEY) || ''); }
 function markPushed() { localStorage.setItem(GIST_HASH_KEY, buildDataHash()); }
@@ -3233,7 +3268,7 @@ async function pullFromGist(token, gistId) {
   if (etag) gistLastETag = etag;
   const data = await res.json();
   const content = data.files && data.files[GIST_FILENAME] && data.files[GIST_FILENAME].content;
-  if (!content) throw new Error('Arquivo nao encontrado no Gist');
+  if (!content) throw new Error('Arquivo não encontrado no Gist');
   return JSON.parse(content);
 }
 
@@ -3275,7 +3310,121 @@ async function pushToGist(silent) {
   }
 }
 
+// ── SMART MERGE DE FICHAS ──
+function applyRemoteData(remote) {
+  if (!remote || !remote.list || !remote.chars) return false;
+  
+  const localList = getCharList();
+  const localDeleted = getDeletedChars();
+  let changed = false;
+  
+  const listMap = new Map();
+  localList.forEach(c => listMap.set(c.id, c));
+
+  // 1. Processa Fichas Apagadas
+  if (remote.deleted) {
+    remote.deleted.forEach(rd => {
+      const lc = listMap.get(rd.id);
+      if (lc) {
+        const lt = new Date(lc.updatedAt || lc.createdAt || 0).getTime();
+        const rt = new Date(rd.deletedAt).getTime();
+        // Se a deleção remota for mais nova que a nossa última edição, apagamos localmente
+        if (rt > lt) {
+          listMap.delete(rd.id);
+          localStorage.removeItem(CHAR_PREFIX + rd.id);
+          changed = true;
+          if (!localDeleted.find(d => d.id === rd.id)) localDeleted.push(rd);
+        }
+      }
+    });
+    localStorage.setItem(DELETED_CHARS_KEY, JSON.stringify(localDeleted));
+  }
+
+  // 2. Processa Fichas Novas/Editadas
+  remote.list.forEach(rc => {
+    // Impede reviver fichas se nós as apagamos depois que o outro dispositivo salvou
+    const isDelLocally = localDeleted.find(d => d.id === rc.id);
+    if (isDelLocally && new Date(isDelLocally.deletedAt).getTime() > new Date(rc.updatedAt || rc.createdAt || 0).getTime()) {
+      return; 
+    }
+
+    const lc = listMap.get(rc.id);
+    if (!lc) {
+      listMap.set(rc.id, rc);
+      localStorage.setItem(CHAR_PREFIX + rc.id, JSON.stringify(remote.chars[rc.id] || {}));
+      changed = true;
+    } else {
+      const lt = new Date(lc.updatedAt || lc.createdAt || 0).getTime();
+      const rt = new Date(rc.updatedAt || rc.createdAt || 0).getTime();
+      if (rt > lt) {
+        listMap.set(rc.id, { ...lc, ...rc });
+        localStorage.setItem(CHAR_PREFIX + rc.id, JSON.stringify(remote.chars[rc.id] || {}));
+        changed = true;
+      }
+    }
+  });
+  
+  if (changed) {
+    const merged = Array.from(listMap.values()).sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+    _origSaveCharList(merged); // Salva sem disparar loop de sync
+  }
+  return changed;
+}
+
 async function fullSync(silent) {
+  const token = getGistToken(), gistId = getGistId();
+  if (!token || gistIsSyncing || !navigator.onLine) return;
+  gistIsSyncing = true;
+  setSyncDots('ing');
+  try {
+    // 1. Checa se você tem alguma edição local pendente para enviar
+    let needsPush = hasUnpushed();
+    
+    if (gistId) {
+      const remote = await pullFromGist(token, gistId);
+      if (!remote) {
+        if (needsPush) await pushToGist(true);
+        else setSyncDots('ok');
+        return;
+      }
+      if (remote.devices) mergeDeviceReg(remote.devices);
+      
+      // 2. Se o Gist tem dados mais novos que os seus
+      if (remote.savedAt && remote.savedAt !== gistLastSavedAt) {
+        const changed = applyRemoteData(remote); // Junta as fichas sem esmagar
+        gistLastSavedAt = remote.savedAt;
+        localStorage.setItem(GIST_LAST_KEY, gistLastSavedAt);
+        
+        if (changed) {
+          renderIndex();
+          if (currentCharId && remote.chars && remote.chars[currentCharId]) {
+            loadSheet(currentCharId);
+          }
+          if (!silent) showToast('Fichas atualizadas do Gist!');
+          
+          // 3. O SEGREDO AQUI: Se você NÃO tinha alterações locais, seu site 
+          // apenas adotou as fichas da nuvem. Marcamos como "Sincronizado" 
+          // na memória para que ele NÃO reenvie os mesmos dados de volta pro Gist.
+          if (!needsPush) {
+            markPushed();
+          }
+        }
+      }
+    } else { 
+      needsPush = true; 
+    }
+    
+    // Só envia pacote para a nuvem se você tiver feito alguma edição!
+    if (needsPush) await pushToGist(true);
+    else setSyncDots('ok');
+    
+  } catch(e) {
+    setSyncDots('err');
+    console.error('Sync error:', e);
+  } finally { 
+    gistIsSyncing = false; 
+  }
+}
   const token = getGistToken(), gistId = getGistId();
   if (!token || gistIsSyncing || !navigator.onLine) return;
   gistIsSyncing = true;
@@ -3299,11 +3448,12 @@ async function fullSync(silent) {
           if (currentCharId && remote.chars && remote.chars[currentCharId]) {
             loadSheet(currentCharId);
           }
-          if (!silent) showToast('Fichas atualizadas do Gist');
-          needsPush = true;
+          if (!silent) showToast('Fichas atualizadas do Gist!');
+          needsPush = true; // Se mesclamos, avisamos os outros dispositivos do estado unificado
         }
       }
     } else { needsPush = true; }
+    
     if (needsPush) await pushToGist(true);
     else setSyncDots('ok');
   } catch(e) {
@@ -3332,7 +3482,7 @@ async function silentPoll() {
       if (changed) {
         renderIndex();
         if (currentCharId && remote.chars && remote.chars[currentCharId]) loadSheet(currentCharId);
-        showToast('Fichas sincronizadas em tempo real');
+        showToast('Fichas sincronizadas automaticamente');
         setSyncDots('ok');
         await pushToGist(true);
       }
@@ -3371,14 +3521,14 @@ function setSyncDots(state) {
 }
 
 async function connectSync() {
-  if (!navigator.onLine) return showToast('Sem conexao com a internet.');
+  if (!navigator.onLine) return showToast('Sem conexão com a internet.');
   const tokenInput = document.getElementById('sync-token-input');
   const token = tokenInput.value.trim();
-  if (!token || token.startsWith('●')) return showToast('Insira um token valido.');
+  if (!token || token.startsWith('●')) return showToast('Insira um token válido.');
   setSyncFetchStatus('loading', 'Verificando token...');
   try {
     const meRes = await fetch('https://api.github.com/user', { headers: { Authorization: 'token ' + token } });
-    if (!meRes.ok) throw new Error('Token invalido ou sem permissao');
+    if (!meRes.ok) throw new Error('Token inválido ou sem permissão');
     localStorage.setItem(GIST_TOKEN_KEY, token);
 
     let foundGistId = null;
@@ -3403,7 +3553,7 @@ async function connectSync() {
         localStorage.setItem(GIST_LAST_KEY, gistLastSavedAt);
         markPushed();
         if (changed) { renderIndex(); showToast('Fichas importadas do Gist!'); }
-        else showToast('Conectado — fichas ja atualizadas.');
+        else showToast('Conectado — fichas já estão idênticas.');
       }
     } else {
       setSyncFetchStatus('loading', 'Criando novo Gist...');
@@ -3420,7 +3570,7 @@ async function connectSync() {
 }
 
 function disconnectSync() {
-  if (!confirm('Desconectar do Gist? Os dados locais serao mantidos.')) return;
+  if (!confirm('Desconectar do Gist? As fichas locais serão mantidas.')) return;
   localStorage.removeItem(GIST_TOKEN_KEY);
   localStorage.removeItem(GIST_ID_KEY);
   localStorage.removeItem(GIST_LAST_KEY);
@@ -3448,10 +3598,10 @@ function timeAgoSync(iso) {
   const d = Date.now() - new Date(iso).getTime();
   const m = Math.floor(d/60000);
   if (m < 1) return 'agora mesmo';
-  if (m < 60) return m + ' min atras';
+  if (m < 60) return m + ' min atrás';
   const h = Math.floor(m/60);
-  if (h < 24) return h + 'h atras';
-  return Math.floor(h/24) + 'd atras';
+  if (h < 24) return h + 'h atrás';
+  return Math.floor(h/24) + 'd atrás';
 }
 
 function updateSyncUI() {
@@ -3473,7 +3623,7 @@ function updateSyncUI() {
     renderSyncDevices();
   } else {
     setSyncDots('off');
-    if (stxt) stxt.textContent = 'NAO CONFIGURADO';
+    if (stxt) stxt.textContent = 'NÃO CONFIGURADO';
     if (stime) stime.textContent = '';
     if (connBtn) connBtn.textContent = 'Conectar e Sincronizar';
     if (discBtn) discBtn.style.display = 'none';
@@ -3503,32 +3653,6 @@ function renderSyncDevices() {
   }).join('');
 }
 
-function applyRemoteData(remote) {
-  if (!remote || !remote.list || !remote.chars) return false;
-  const localList = getCharList();
-  let changed = false;
-  const listMap = Object.fromEntries(localList.map(c => [c.id, c]));
-  remote.list.forEach(rc => {
-    const lc = listMap[rc.id];
-    if (!lc) {
-      listMap[rc.id] = rc;
-      localStorage.setItem(CHAR_PREFIX + rc.id, JSON.stringify(remote.chars[rc.id] || {}));
-      changed = true;
-    } else {
-      const lt = new Date(lc.updatedAt || 0).getTime();
-      const rt = new Date(rc.updatedAt || 0).getTime();
-      if (rt > lt) {
-        listMap[rc.id] = { ...lc, ...rc };
-        localStorage.setItem(CHAR_PREFIX + rc.id, JSON.stringify(remote.chars[rc.id] || {}));
-        changed = true;
-      }
-    }
-  });
-  const merged = Object.values(listMap).sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
-  saveCharList(merged);
-  return changed;
-}
-
 function openSyncModal() {
   updateSyncUI();
   setSyncFetchStatus('hidden', '');
@@ -3539,23 +3663,32 @@ function closeSyncModal() {
 }
 document.getElementById('modal-sync').addEventListener('click', function(e) { if (e.target === this) closeSyncModal(); });
 
+// ── OVERRIDES PARA CAPTURAR A DATA CERTA ──
 const _origSaveCharData = saveCharData;
 saveCharData = function(id, data) {
+  _origSaveCharData(id, data); // Salva o arquivo principal
+
+  // A MÁGICA ESTÁ AQUI: Atualiza forçadamente a data de modificação
   const list = getCharList();
   const entry = list.find(c => c.id === id);
-  if (entry) entry.updatedAt = new Date().toISOString();
-  _origSaveCharData(id, data);
+  if (entry) {
+    entry.updatedAt = new Date().toISOString();
+    _origSaveCharList(list); // Usamos o Original para não causar Loop infinito
+  }
   scheduleGistSync();
 };
+
 const _origSaveCharList = saveCharList;
 saveCharList = function(list) {
   _origSaveCharList(list);
+  scheduleGistSync();
 };
+
 const _origDeleteChar = deleteChar;
 deleteChar = function(id, e) {
-  const result = _origDeleteChar(id, e);
+  markCharDeleted(id); // Guarda no cemitério para garantir que os outros aparelhos apaguem também
+  _origDeleteChar(id, e);
   scheduleGistSync();
-  return result;
 };
 
 /* ════════════════════════════════════════════════════
