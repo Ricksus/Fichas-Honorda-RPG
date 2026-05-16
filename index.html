@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Honorda">
-<link rel="manifest" id="pwa-manifest">
+<link rel="manifest" href="manifest.json">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&family=Special+Elite&display=swap" rel="stylesheet">
 <style>
 /* ══════════════════════════════════════════════════
@@ -1237,7 +1237,6 @@ input[type="checkbox"] { display: none; }
 /* ══════════════════════════════════════════════════
    FICHA DE CRIATURA
 ══════════════════════════════════════════════════ */
-/* ND (Nível de Dificuldade) */
 .nd-row {
   display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;
 }
@@ -1267,7 +1266,6 @@ input[type="checkbox"] { display: none; }
 }
 .nd-square input:focus { box-shadow: none; background: transparent; }
 
-/* Nível de Choque */
 .choque-panel { border: 1px solid rgba(100,60,130,0.4); position: relative; }
 .choque-panel::before, .choque-panel::after {
   content: ''; position: absolute; width: 8px; height: 8px;
@@ -1289,7 +1287,6 @@ input[type="checkbox"] { display: none; }
 }
 .choque-item input[type="number"] { text-align: center; font-size: 1.3rem; font-family: var(--ff-italic); font-style: italic; }
 
-/* Fraquezas */
 .fraqueza-list { display: flex; flex-direction: column; gap: 4px; }
 .fraqueza-row {
   display: flex; align-items: center; gap: 8px;
@@ -1297,7 +1294,6 @@ input[type="checkbox"] { display: none; }
 }
 .fraqueza-row input[type="text"] { flex: 1; font-size: 11px; border-bottom: none; padding: 3px 5px; }
 
-/* Ações da criatura */
 .acao-card {
   background: rgba(10,8,14,0.8); border: 1px solid var(--line);
   padding: 12px; position: relative; transition: border-color .2s;
@@ -1343,10 +1339,8 @@ input[type="checkbox"] { display: none; }
 .btn-add-acao:hover { border-color: var(--red); color: var(--text); }
 .btn-add-acao.gold:hover { border-color: var(--gold-light); color: var(--gold-light); }
 
-/* Criatura — Pontos Corrompidos editáveis */
 .corrompidos-editavel { color: #b070b0 !important; }
 
-/* Marcas de descontrole — bonus manual */
 .descontrole-bonus-row {
   display: flex; align-items: center; gap: 8px; justify-content: center;
   margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line);
@@ -1363,19 +1357,11 @@ input[type="checkbox"] { display: none; }
    RESPONSIVO — TABLET / PORTRAIT (≤ 900px)
 ══════════════════════════════════════════════════ */
 @media (max-width: 900px) {
-
-  /* Index */
   .index-header { flex-direction: column; align-items: flex-start; gap: 16px; padding: 24px; }
   .index-logo-title { font-size: 2.6rem; }
   .index-body { padding: 20px 24px 40px; }
   .agents-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
-
-  /* Header da ficha */
-  .site-header {
-    flex-wrap: wrap;
-    gap: 12px;
-    padding: 12px 18px;
-  }
+  .site-header { flex-wrap: wrap; gap: 12px; padding: 12px 18px; }
   .logo-block { order: 1; }
   .logo-sep { display: none; }
   .logo-h { font-size: 2rem; }
@@ -1383,128 +1369,65 @@ input[type="checkbox"] { display: none; }
   .back-btn { order: 0; }
   .header-fields { order: 3; width: 100%; gap: 12px; }
   .header-actions { order: 2; margin-left: auto; }
-
-  /* Avatar no header — encolhe um pouco */
   .profile-avatar-wrap { width: 80px; height: 80px; }
   .profile-avatar-img { width: 80px; height: 80px; }
   .profile-avatar-placeholder { width: 80px; height: 80px; font-size: 1.4rem; }
-
-  /* Tabs */
   .tab-nav { padding: 0 18px; overflow-x: auto; }
   .tab-btn { padding: 11px 14px; font-size: 9px; letter-spacing: 2px; white-space: nowrap; }
-
-  /* Tab pages */
   .tab-page { padding: 18px 18px 50px; }
-
-  /* Grid principal — aptidões em cima, centro no meio, direita embaixo */
-  .main-grid {
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
-
-  /* Aptidões: vira grade horizontal 2 colunas para não ocupar tanta altura */
+  .main-grid { grid-template-columns: 1fr; gap: 14px; }
   .aptidoes-col { gap: 0; }
-  .aptidoes-col > div:first-child { /* col-label */ margin-bottom: 4px; }
-
-  /* Grids de 2 colunas que ficam em 1 no mobile */
-  .estado-row { grid-template-columns: 1fr 1fr; } /* mantém 2 */
-  .pontos-extras-row { grid-template-columns: 1fr 1fr; } /* mantém 2 */
-  .niveis-row { grid-template-columns: 1fr 1fr; } /* mantém 2 */
+  .estado-row { grid-template-columns: 1fr 1fr; }
+  .pontos-extras-row { grid-template-columns: 1fr 1fr; }
+  .niveis-row { grid-template-columns: 1fr 1fr; }
   .occ-row { grid-template-columns: 1fr; gap: 10px; }
   .page2-grid { grid-template-columns: 1fr; }
   .page3-grid { grid-template-columns: 1fr; }
-
-  /* Equipamentos — oculta coluna Materiais pra caber */
-  .equip-table th:nth-child(3),
-  .equip-table td:nth-child(3) { display: none; }
-
-  /* Criatura — ND row */
+  .equip-table th:nth-child(3), .equip-table td:nth-child(3) { display: none; }
   .nd-row { grid-template-columns: 1fr 1fr; }
-
-  /* Criatura — Ações & Habilidades: 1 coluna */
   #ctab-1 > div { grid-template-columns: 1fr !important; }
-
-  /* Choque grid */
   .choque-grid { grid-template-columns: 1fr; }
-
-  /* Modal */
   .modal-box { padding: 24px 20px; }
-
-  /* Esp-grid */
   .esp-grid { grid-template-columns: 1fr 1fr; }
 }
 
-/* ══════════════════════════════════════════════════
-   RESPONSIVO — MOBILE (≤ 600px)
-══════════════════════════════════════════════════ */
 @media (max-width: 600px) {
-
   body { font-size: 13px; }
-
-  /* Index */
   .index-header { padding: 18px 16px; }
   .index-logo-title { font-size: 2rem; }
   .index-body { padding: 16px 16px 40px; }
   .agents-grid { grid-template-columns: 1fr; }
   .index-actions { flex-direction: row; width: 100%; }
-  .index-actions .btn-primary,
-  .index-actions .btn-secondary { flex: 1; text-align: center; }
-
-  /* Header da ficha */
+  .index-actions .btn-primary, .index-actions .btn-secondary { flex: 1; text-align: center; }
   .site-header { padding: 10px 14px; gap: 8px; }
   .logo-h { font-size: 1.6rem; }
   .logo-rest { font-size: 0.85rem; letter-spacing: 3px; }
   .back-btn { font-size: 9px; padding: 6px 10px; }
   .btn-action { font-size: 8px; padding: 6px 10px; letter-spacing: 1px; }
-
-  /* Avatar menor no mobile */
   .profile-avatar-wrap { width: 60px; height: 60px; }
   .profile-avatar-img { width: 60px; height: 60px; }
   .profile-avatar-placeholder { width: 60px; height: 60px; font-size: 1.1rem; }
-
-  /* Tab pages */
   .tab-page { padding: 14px 14px 50px; }
   .tab-btn { padding: 10px 10px; font-size: 8px; letter-spacing: 1px; }
-
-  /* Grid principal */
   .main-grid { gap: 12px; }
-
-  /* Estado boxes menores */
   .estado-row { gap: 8px; }
   .estado-inputs input { font-size: 1.2rem; }
   .pontos-extras-row { gap: 8px; }
   .niveis-row { gap: 8px; }
   .nivel-square, .nivel-circle { width: 52px; height: 52px; }
   .nivel-square input, .nivel-circle input { font-size: 1.4rem; }
-
-  /* Aptidões — valor e crit um pouco menores */
   .apt-ring { width: 38px; height: 28px; }
   .apt-ring input { font-size: 1.2rem; }
   .apt-crit { width: 44px; height: 28px; }
   .apt-label { font-size: 9px; }
-
-  /* Diamonds menores */
   .diamond-check { width: 13px; height: 13px; }
-
-  /* Painel padding menor */
   .panel-body { padding: 10px; }
-
-  /* Esp-grid — 1 coluna no mobile pequeno */
   .esp-grid { grid-template-columns: 1fr; }
-
-  /* Equipamentos — oculta Peso tb */
-  .equip-table th:nth-child(4),
-  .equip-table td:nth-child(4) { display: none; }
-
-  /* ND row — 1 coluna */
+  .equip-table th:nth-child(4), .equip-table td:nth-child(4) { display: none; }
   .nd-row { grid-template-columns: 1fr; }
   .nd-box { display: flex; align-items: center; gap: 12px; text-align: left; padding: 10px; }
   .nd-square { margin: 0; }
-
-  /* Modal crop menor */
   #crop-container { height: 240px !important; }
-
-  /* Descontrole bonus */
   .descontrole-bonus-row { flex-wrap: wrap; justify-content: center; }
 }
 </style>
@@ -1989,7 +1912,6 @@ input[type="checkbox"] { display: none; }
       <!-- COLUNA CENTRAL -->
       <div class="center-col">
 
-        <!-- Tipo / Nome da Espécie -->
         <div class="occ-row">
           <div class="field-group">
             <label>Tipo de Criatura</label>
@@ -2001,7 +1923,6 @@ input[type="checkbox"] { display: none; }
           </div>
         </div>
 
-        <!-- ND -->
         <div>
           <div class="deco-divider">
             <span>✦</span>
@@ -2027,9 +1948,7 @@ input[type="checkbox"] { display: none; }
           </div>
         </div>
 
-        <!-- Pontos Corrompidos (editável) -->
         <div class="pontos-box corrompidos" style="border:1px solid rgba(100,50,100,0.3);padding:11px;text-align:center;position:relative;">
-          <div class="pontos-box::before" style="display:none;"></div>
           <div class="pontos-title">Pontos Corrompidos</div>
           <div class="estado-inputs">
             <input type="number" id="c_corrompidos_atual" class="corrompidos-editavel" min="0" oninput="autoSave()">
@@ -2039,7 +1958,6 @@ input[type="checkbox"] { display: none; }
           <div class="estado-labels"><span>Atual</span><span></span><span>Total</span></div>
         </div>
 
-        <!-- Nível de Choque -->
         <div class="choque-panel panel-body">
           <div class="choque-title">⚡ Perturbação</div>
           <div class="panel-body">
@@ -2056,14 +1974,11 @@ input[type="checkbox"] { display: none; }
           </div>
         </div>
 
-
-        <!-- Fraquezas -->
         <div class="panel">
           <div class="panel-title">Fraquezas</div>
           <div class="panel-body"><textarea class="tall-textarea" id="c_fraquezas" oninput="autoSave()" placeholder="Liste as fraquezas da criatura..."></textarea></div>
         </div>
 
-        <!-- Descrição -->
         <div class="panel">
           <div class="panel-title">Descrição da Criatura</div>
           <div class="panel-body"><textarea class="tall-textarea xl" id="c_descricao" oninput="autoSave()"></textarea></div>
@@ -2103,7 +2018,6 @@ input[type="checkbox"] { display: none; }
   <div class="tab-page creature-page" id="ctab-1" style="display:none;">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start;">
 
-      <!-- Ataques e Ações -->
       <div>
         <div class="panel" style="margin-bottom:16px;">
           <div class="panel-title">Ataques & Ações</div>
@@ -2117,7 +2031,6 @@ input[type="checkbox"] { display: none; }
         </div>
       </div>
 
-      <!-- Habilidades -->
       <div>
         <div class="panel">
           <div class="panel-title">Habilidades da Criatura</div>
@@ -2139,7 +2052,6 @@ input[type="checkbox"] { display: none; }
 <div class="modal-overlay" id="modal-new-char">
   <div class="modal-box">
     <div class="modal-title" id="modal-title-text">✦ Novo Sobrevivente</div>
-    <!-- Seletor de tipo -->
     <div style="display:flex;gap:8px;margin-bottom:20px;">
       <button class="modal-type-btn active" id="modal-type-survivor" onclick="setModalType('survivor')">Sobrevivente</button>
       <button class="modal-type-btn" id="modal-type-creature" onclick="setModalType('creature')">Criatura</button>
@@ -2220,7 +2132,6 @@ input[type="checkbox"] { display: none; }
 const STORE_KEY = 'honorda_chars_v3';
 const CHAR_PREFIX = 'honorda_char_v3_';
 
-// Técnicas que começam em 0
 const TECNICAS_ZERO = new Set(['Arte','Ciências','Linguagem','Pilotagem','Tecnologia','Poder','Religião']);
 
 const TECNICAS = [
@@ -2251,7 +2162,6 @@ function getCharData(id) {
 }
 function saveCharData(id, data) {
   localStorage.setItem(CHAR_PREFIX + id, JSON.stringify(data));
-  // Update summary in list
   const list = getCharList();
   const entry = list.find(c => c.id === id);
   if (entry) {
@@ -2289,7 +2199,6 @@ function renderIndex() {
   document.getElementById('count-survivors').textContent = survivors.length;
   document.getElementById('count-creatures').textContent = creatures.length;
 
-  // Mostra/oculta seções vazias
   document.getElementById('section-survivors').style.display = survivors.length === 0 && creatures.length > 0 ? 'none' : '';
   document.getElementById('section-creatures').style.display = creatures.length === 0 ? 'none' : '';
 
@@ -2446,7 +2355,6 @@ function openSheet(id) {
    GERAÇÃO DINÂMICA
 ════════════════════════════════════════════════════ */
 function buildDynamicElements() {
-  // Diamonds — max 20 slots (mental=6 → 8 + up to 12 bonus)
   const diamondsRow = document.getElementById('diamonds-row');
   diamondsRow.innerHTML = '';
   for (let i = 1; i <= 20; i++) {
@@ -2462,7 +2370,6 @@ function buildDynamicElements() {
     diamondsRow.appendChild(d);
   }
 
-  // Equipamentos
   const equipTbody = document.getElementById('equip-tbody');
   equipTbody.innerHTML = '';
   for (let i = 1; i <= 12; i++) {
@@ -2476,7 +2383,6 @@ function buildDynamicElements() {
     equipTbody.appendChild(tr);
   }
 
-  // Técnicas
   const tecBody = document.getElementById('tecnicas-body');
   tecBody.innerHTML = '';
   TECNICAS.forEach((tec, idx) => {
@@ -2486,7 +2392,6 @@ function buildDynamicElements() {
     tecBody.appendChild(div);
   });
 
-  // Traumas
   const traumaList = document.getElementById('trauma-temp-list');
   traumaList.innerHTML = '';
   for (let i = 1; i <= 20; i++) {
@@ -2503,7 +2408,6 @@ function buildDynamicElements() {
     });
   }
 
-  // check-labels (sobrevivente + criatura)
   document.querySelectorAll('.check-label').forEach(el => {
     el.addEventListener('click', () => {
       el.classList.toggle('checked');
@@ -2511,7 +2415,6 @@ function buildDynamicElements() {
     });
   });
 
-  // Essência dots
   document.querySelectorAll('.essencia-dot').forEach(el => {
     el.addEventListener('click', () => {
       el.classList.toggle('checked');
@@ -2519,7 +2422,6 @@ function buildDynamicElements() {
     });
   });
 
-  // Técnicas da criatura
   const cTecBody = document.getElementById('c-tecnicas-body');
   if (cTecBody) {
     cTecBody.innerHTML = '';
@@ -2531,7 +2433,6 @@ function buildDynamicElements() {
     });
   }
 
-  // Fraquezas
   const fraquezaList = document.getElementById('fraqueza-list');
   if (fraquezaList) {
     fraquezaList.innerHTML = '';
@@ -2591,7 +2492,6 @@ function recalcAll() {
   document.getElementById('carne-formula').textContent = `6 + ${fisico} + ${const_} = ${carne}`;
   document.getElementById('energia-formula').textContent = `8 + ${fisico} = ${energia}`;
 
-  // Apenas preenche o total se estiver vazio ou for o valor padrão (não editado manualmente)
   const carneTotal = document.getElementById('carne_total');
   const energiaTotal = document.getElementById('energia_total');
   if (!carneTotal.dataset.manualEdit) carneTotal.value = carne;
@@ -2610,7 +2510,6 @@ function getMaxMarcas() {
 
 function recalcCorrompidos() {
   const maxMarcas = getMaxMarcas();
-  // Atualiza visibilidade dos slots
   document.querySelectorAll('.diamond-check').forEach(d => {
     const slot = parseInt(d.dataset.slot);
     if (slot <= maxMarcas) {
@@ -2619,7 +2518,7 @@ function recalcCorrompidos() {
       d.style.opacity = '';
     } else {
       d.style.display = 'none';
-      d.classList.remove('checked'); // desmarca slots além do limite
+      d.classList.remove('checked');
     }
   });
   const corrompidosMax = maxMarcas * 2;
@@ -2628,7 +2527,6 @@ function recalcCorrompidos() {
   schedSave();
 }
 
-// Marcar edição manual nos totais de Carne/Energia
 document.addEventListener('DOMContentLoaded', () => {
   ['carne_total', 'energia_total'].forEach(id => {
     document.getElementById(id).addEventListener('input', function() {
@@ -2666,38 +2564,31 @@ document.querySelectorAll('.creature-tab').forEach(btn => {
 function collectSheetData() {
   const data = {};
 
-  // Inputs e textareas com id
   document.querySelectorAll('#screen-sheet input[id], #screen-sheet textarea[id]').forEach(el => {
     if (el.id) data[el.id] = el.value;
   });
 
-  // Diamonds
   document.querySelectorAll('.diamond-check').forEach(el => {
     data[el.dataset.id] = el.classList.contains('checked');
   });
 
-  // Essência
   document.querySelectorAll('.essencia-dot').forEach(el => {
     data[el.dataset.id] = el.classList.contains('checked');
   });
 
-  // Check-labels (sobrevivente + criatura)
   document.querySelectorAll('.check-label').forEach(el => {
     if (el.dataset.id) data[el.dataset.id] = el.classList.contains('checked');
   });
 
-  // Trauma toggles
   document.querySelectorAll('.trauma-toggle').forEach(el => {
     data[el.dataset.id] = el.classList.contains('checked');
   });
 
-  // Manual edit flags
   ['carne_total','energia_total'].forEach(id => {
     const el = document.getElementById(id);
     if (el?.dataset.manualEdit) data['__manualEdit_' + id] = true;
   });
 
-  // Avatar
   const avatarImg = document.getElementById('profile-avatar-img');
   if (avatarImg && avatarImg.src && avatarImg.style.display !== 'none') {
     data['__avatar'] = avatarImg.src;
@@ -2705,10 +2596,7 @@ function collectSheetData() {
     data['__avatar'] = '';
   }
 
-  // Ações da criatura
   data['__acoes'] = collectAcoes();
-
-  // Tipo de ficha
   data['__sheetType'] = currentSheetType;
 
   return data;
@@ -2717,7 +2605,6 @@ function collectSheetData() {
 function loadSheet(id) {
   const data = getCharData(id);
 
-  // Reset all inputs
   document.querySelectorAll('#screen-sheet input[id], #screen-sheet textarea[id]').forEach(el => {
     el.value = '';
     delete el.dataset.manualEdit;
@@ -2726,7 +2613,6 @@ function loadSheet(id) {
   document.querySelectorAll('.check-label').forEach(el => el.classList.remove('checked'));
   document.querySelectorAll('.trauma-toggle').forEach(el => el.classList.remove('checked'));
 
-  // Apply saved data
   document.querySelectorAll('#screen-sheet input[id], #screen-sheet textarea[id]').forEach(el => {
     if (data[el.id] !== undefined) el.value = data[el.id];
   });
@@ -2744,7 +2630,6 @@ function loadSheet(id) {
     if (data[el.dataset.id] === true) el.classList.add('checked');
   });
 
-  // Restore manual edit flags
   ['carne_total','energia_total'].forEach(id => {
     if (data['__manualEdit_' + id]) {
       const el = document.getElementById(id);
@@ -2752,7 +2637,6 @@ function loadSheet(id) {
     }
   });
 
-  // Restore avatar
   const avatarImg = document.getElementById('profile-avatar-img');
   const placeholder = document.getElementById('profile-avatar-placeholder');
   const removeBtn = document.getElementById('profile-avatar-remove');
@@ -2768,14 +2652,11 @@ function loadSheet(id) {
     removeBtn.style.display = 'none';
   }
 
-  // Restore ações
   restoreAcoes(data['__acoes'] || []);
 
-  // Sheet type
   currentSheetType = data['__sheetType'] || 'survivor';
   applySheetType(currentSheetType);
 
-  // Seed defaults for first survivor load if fields empty
   const isFresh = !data.apt_fisico && !data.tec_0;
   if (isFresh && currentSheetType === 'survivor') {
     TECNICAS.forEach((t, i) => {
@@ -2809,7 +2690,6 @@ function schedSave() {
 
 function autoSave() { schedSave(); }
 
-// Auto-save on any input in sheet
 document.getElementById('screen-sheet').addEventListener('input', e => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
     const id = e.target.id;
@@ -2946,7 +2826,6 @@ function openCropModal(src) {
     cropNaturalH = img.naturalHeight;
     cropZoom = 1;
     document.getElementById('crop-zoom').value = 1;
-    // Centraliza a imagem no container ao abrir
     const container = document.getElementById('crop-container');
     const cW = container.clientWidth;
     const cH = container.clientHeight;
@@ -2980,13 +2859,11 @@ function setupCropEvents() {
   const container = document.getElementById('crop-container');
   const zoomSlider = document.getElementById('crop-zoom');
 
-  // Remove listeners antigos clonando o elemento
   const newContainer = container.cloneNode(true);
   container.parentNode.replaceChild(newContainer, container);
   const img = document.getElementById('crop-img');
 
   zoomSlider.oninput = () => {
-    // Mantém o centro visual fixo ao fazer zoom
     const c = document.getElementById('crop-container');
     const cW = c.clientWidth, cH = c.clientHeight;
     const oldBase = Math.min(cW / cropNaturalW, cH / cropNaturalH);
@@ -2999,7 +2876,6 @@ function setupCropEvents() {
     applyCropTransform();
   };
 
-  // Scroll wheel zoom
   newContainer.addEventListener('wheel', e => {
     e.preventDefault();
     const delta = e.deltaY > 0 ? -0.08 : 0.08;
@@ -3017,7 +2893,6 @@ function setupCropEvents() {
     applyCropTransform();
   }, { passive: false });
 
-  // Drag — sem nenhum clamping, movimento livre
   newContainer.addEventListener('mousedown', e => {
     cropDragging = true;
     cropStartX = e.clientX - cropX;
@@ -3038,7 +2913,6 @@ function setupCropEvents() {
     if (c) c.style.cursor = 'grab';
   });
 
-  // Touch
   newContainer.addEventListener('touchstart', e => {
     cropDragging = true;
     cropStartX = e.touches[0].clientX - cropX;
@@ -3245,18 +3119,15 @@ function applySheetType(type) {
   document.getElementById('sheet-tab-nav').style.display = isSurvivor ? '' : 'none';
   document.getElementById('creature-tab-nav').style.display = isSurvivor ? 'none' : '';
 
-  // Hide/show survivor pages
   ['tab-0','tab-1','tab-2'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = isSurvivor ? '' : 'none';
   });
-  // Hide/show creature pages
   document.querySelectorAll('.creature-page').forEach(el => {
-    el.style.display = isSurvivor ? 'none' : 'none'; // managed by creature tabs
+    el.style.display = isSurvivor ? 'none' : 'none';
   });
 
   if (!isSurvivor) {
-    // Activate first creature tab
     document.querySelectorAll('.creature-tab').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.creature-page').forEach(p => { p.style.display = 'none'; });
     const firstBtn = document.querySelector('.creature-tab[data-ctab="0"]');
@@ -3264,7 +3135,6 @@ function applySheetType(type) {
     const firstPage = document.getElementById('ctab-0');
     if (firstPage) firstPage.style.display = 'block';
   } else {
-    // Activate first survivor tab
     document.querySelectorAll('.tab-btn:not(.creature-tab)').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-page:not(.creature-page)').forEach(p => p.classList.remove('active'));
     const firstBtn = document.querySelector('[data-tab="0"]');
@@ -3292,7 +3162,6 @@ let gistPollTimer  = null;
 let gistLastETag   = '';
 let gistLastSavedAt = localStorage.getItem(GIST_LAST_KEY) || '';
 
-// ── Device identity ──
 function getDeviceId() {
   let id = localStorage.getItem(DEVICE_ID_KEY);
   if (!id) { id = 'dev_' + Date.now().toString(36) + Math.random().toString(36).substr(2,4); localStorage.setItem(DEVICE_ID_KEY, id); }
@@ -3336,13 +3205,11 @@ function mergeDeviceReg(remote) {
   saveDeviceReg(Object.values(map).sort((a,b) => new Date(b.lastSeen)-new Date(a.lastSeen)));
 }
 
-// ── Payload helpers ──
 function getGistToken()  { return localStorage.getItem(GIST_TOKEN_KEY) || ''; }
 function getGistId()     { return localStorage.getItem(GIST_ID_KEY) || ''; }
 
 function buildGistPayload() {
   const devices = registerDevice();
-  // Collect all chars: list + each char data
   const list = getCharList();
   const chars = {};
   list.forEach(c => { chars[c.id] = getCharData(c.id); });
@@ -3356,7 +3223,6 @@ function buildDataHash() {
 function hasUnpushed() { return buildDataHash() !== (localStorage.getItem(GIST_HASH_KEY) || ''); }
 function markPushed() { localStorage.setItem(GIST_HASH_KEY, buildDataHash()); }
 
-// ── Pull / Push ──
 async function pullFromGist(token, gistId) {
   const headers = { Authorization: 'token ' + token };
   if (gistLastETag) headers['If-None-Match'] = gistLastETag;
@@ -3409,38 +3275,6 @@ async function pushToGist(silent) {
   }
 }
 
-// ── Smart merge of chars ──
-function applyRemoteData(remote) {
-  if (!remote || !remote.list || !remote.chars) return false;
-  const localList = getCharList();
-  let changed = false;
-  // Merge list entries
-  const listMap = Object.fromEntries(localList.map(c => [c.id, c]));
-  remote.list.forEach(rc => {
-    const lc = listMap[rc.id];
-    if (!lc) {
-      // New char from remote
-      listMap[rc.id] = rc;
-      localStorage.setItem(CHAR_PREFIX + rc.id, JSON.stringify(remote.chars[rc.id] || {}));
-      changed = true;
-    } else {
-      // Compare updatedAt
-      const lt = new Date(lc.updatedAt || 0).getTime();
-      const rt = new Date(rc.updatedAt || 0).getTime();
-      if (rt > lt) {
-        listMap[rc.id] = { ...lc, ...rc };
-        localStorage.setItem(CHAR_PREFIX + rc.id, JSON.stringify(remote.chars[rc.id] || {}));
-        changed = true;
-      }
-    }
-  });
-  // Save merged list
-  const merged = Object.values(listMap).sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
-  saveCharList(merged);
-  return changed;
-}
-
-// ── Full sync ──
 async function fullSync(silent) {
   const token = getGistToken(), gistId = getGistId();
   if (!token || gistIsSyncing || !navigator.onLine) return;
@@ -3462,7 +3296,6 @@ async function fullSync(silent) {
         localStorage.setItem(GIST_LAST_KEY, gistLastSavedAt);
         if (changed) {
           renderIndex();
-          // If current char was updated, reload it
           if (currentCharId && remote.chars && remote.chars[currentCharId]) {
             loadSheet(currentCharId);
           }
@@ -3520,7 +3353,6 @@ function startSmartGistMonitor() {
 window.addEventListener('online',  async () => { setSyncDots('ing'); await fullSync(true); startGistPolling(); });
 window.addEventListener('offline', () => { stopGistPolling(); if (getGistToken()) setSyncDots('off'); });
 
-// ── Sync UI dots ──
 function setSyncDots(state) {
   const colors = { ok: '#4caf50', ing: '#f0a030', err: '#c0392b', off: 'var(--text-dim)' };
   const shadows = { ok: '0 0 8px rgba(76,175,80,0.8)', ing: '0 0 8px rgba(240,160,48,0.8)', err: '0 0 8px rgba(192,57,43,0.8)', off: 'none' };
@@ -3538,7 +3370,6 @@ function setSyncDots(state) {
   if (stxt) stxt.textContent = (labels[state] || 'Sync').toUpperCase();
 }
 
-// ── Connect flow ──
 async function connectSync() {
   if (!navigator.onLine) return showToast('Sem conexao com a internet.');
   const tokenInput = document.getElementById('sync-token-input');
@@ -3625,15 +3456,12 @@ function timeAgoSync(iso) {
 
 function updateSyncUI() {
   const token = getGistToken();
-  const gistId = getGistId();
   const connected = !!token;
-  const dot = document.getElementById('sync-status-dot');
   const stxt = document.getElementById('sync-status-text');
   const stime = document.getElementById('sync-status-time');
   const connBtn = document.getElementById('sync-connect-btn');
   const discBtn = document.getElementById('sync-disconnect-btn');
   const devSec = document.getElementById('sync-devices-section');
-  const tokenSec = document.getElementById('sync-token-section');
   if (connected) {
     setSyncDots(navigator.onLine ? 'ok' : 'off');
     if (stxt) stxt.textContent = navigator.onLine ? 'CONECTADO' : 'CONECTADO (OFFLINE)';
@@ -3641,7 +3469,7 @@ function updateSyncUI() {
     if (connBtn) connBtn.textContent = 'Sincronizar Agora';
     if (discBtn) discBtn.style.display = 'block';
     if (devSec) devSec.style.display = 'block';
-    if (tokenSec) { document.getElementById('sync-token-input').value = '●●●●●●●●●●●●●●●'; }
+    document.getElementById('sync-token-input').value = '●●●●●●●●●●●●●●●';
     renderSyncDevices();
   } else {
     setSyncDots('off');
@@ -3650,7 +3478,7 @@ function updateSyncUI() {
     if (connBtn) connBtn.textContent = 'Conectar e Sincronizar';
     if (discBtn) discBtn.style.display = 'none';
     if (devSec) devSec.style.display = 'none';
-    if (tokenSec) { document.getElementById('sync-token-input').value = ''; }
+    document.getElementById('sync-token-input').value = '';
   }
 }
 
@@ -3675,7 +3503,32 @@ function renderSyncDevices() {
   }).join('');
 }
 
-// ── Sync modal open/close ──
+function applyRemoteData(remote) {
+  if (!remote || !remote.list || !remote.chars) return false;
+  const localList = getCharList();
+  let changed = false;
+  const listMap = Object.fromEntries(localList.map(c => [c.id, c]));
+  remote.list.forEach(rc => {
+    const lc = listMap[rc.id];
+    if (!lc) {
+      listMap[rc.id] = rc;
+      localStorage.setItem(CHAR_PREFIX + rc.id, JSON.stringify(remote.chars[rc.id] || {}));
+      changed = true;
+    } else {
+      const lt = new Date(lc.updatedAt || 0).getTime();
+      const rt = new Date(rc.updatedAt || 0).getTime();
+      if (rt > lt) {
+        listMap[rc.id] = { ...lc, ...rc };
+        localStorage.setItem(CHAR_PREFIX + rc.id, JSON.stringify(remote.chars[rc.id] || {}));
+        changed = true;
+      }
+    }
+  });
+  const merged = Object.values(listMap).sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+  saveCharList(merged);
+  return changed;
+}
+
 function openSyncModal() {
   updateSyncUI();
   setSyncFetchStatus('hidden', '');
@@ -3686,10 +3539,8 @@ function closeSyncModal() {
 }
 document.getElementById('modal-sync').addEventListener('click', function(e) { if (e.target === this) closeSyncModal(); });
 
-// ── Hook into saveCharData to trigger sync ──
 const _origSaveCharData = saveCharData;
 saveCharData = function(id, data) {
-  // Track updatedAt
   const list = getCharList();
   const entry = list.find(c => c.id === id);
   if (entry) entry.updatedAt = new Date().toISOString();
@@ -3708,70 +3559,13 @@ deleteChar = function(id, e) {
 };
 
 /* ════════════════════════════════════════════════════
-   PWA — Service Worker & Manifest Inline
-════════════════════════════════════════════════════ */
-/* ════════════════════════════════════════════════════
-   PWA — Manifest, Service Worker & Install Prompt
+   PWA — Service Worker & Install Prompt
+   (manifest.json e sw.js são arquivos externos reais)
 ════════════════════════════════════════════════════ */
 (function initPWA() {
-  // ── Manifest com ícones corretamente declarados ──
-  const manifest = {
-    name: 'Honorda RPG',
-    short_name: 'Honorda',
-    description: 'Sistema de Fichas para RPG Dark Fantasy',
-    start_url: './',
-    display: 'standalone',
-    background_color: '#060608',
-    theme_color: '#060608',
-    orientation: 'any',
-    icons: [
-      { src: 'hunurda192.png', sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
-      { src: 'hunurda512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
-    ]
-  };
-  const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
-  const manifestUrl = URL.createObjectURL(blob);
-  const link = document.getElementById('pwa-manifest');
-  if (link) link.href = manifestUrl;
-
-  // ── Service Worker ──
+  // ── Service Worker — arquivo real sw.js na raiz ──
   if ('serviceWorker' in navigator) {
-    const swCode = `
-const CACHE = 'index';
-const URLS  = ['./', './index.html'];
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => {
-    return Promise.allSettled(URLS.map(u => c.add(u)));
-  }).then(() => self.skipWaiting()));
-});
-self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(keys =>
-    Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-  ).then(() => self.clients.claim()));
-});
-self.addEventListener('fetch', e => {
-  if (e.request.url.includes('api.github.com') ||
-      e.request.url.includes('fonts.google') ||
-      e.request.url.includes('fonts.gstatic') ||
-      e.request.method !== 'GET') return;
-  e.respondWith(
-    caches.open(CACHE).then(c =>
-      c.match(e.request).then(r => r ||
-        fetch(e.request).then(resp => {
-          if (resp.ok) c.put(e.request, resp.clone());
-          return resp;
-        }).catch(() => r)
-      )
-    )
-  );
-});
-self.addEventListener('message', e => {
-  if (e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting();
-});
-    `;
-    const swBlob = new Blob([swCode], { type: 'application/javascript' });
-    const swUrl = URL.createObjectURL(swBlob);
-    navigator.serviceWorker.register(swUrl).then(reg => {
+    navigator.serviceWorker.register('./sw.js').then(reg => {
       reg.onupdatefound = () => {
         const w = reg.installing;
         if (w) w.onstatechange = () => {
@@ -3779,7 +3573,8 @@ self.addEventListener('message', e => {
             w.postMessage({ type: 'SKIP_WAITING' });
         };
       };
-    }).catch(e => console.log('SW não registrado:', e));
+      console.log('[SW] Registrado com sucesso:', reg.scope);
+    }).catch(e => console.warn('[SW] Registro falhou:', e));
   }
 
   // ── Install Prompt ──
@@ -3791,10 +3586,9 @@ self.addEventListener('message', e => {
 
   let deferredPrompt = null;
 
-  // Não mostra se já instalado ou já dispensado recentemente
   function wasDismissedRecently() {
     const ts = parseInt(localStorage.getItem(DISMISSED_KEY) || '0');
-    return Date.now() - ts < 3 * 24 * 60 * 60 * 1000; // 3 dias
+    return Date.now() - ts < 3 * 24 * 60 * 60 * 1000;
   }
 
   function isStandalone() {
@@ -3811,7 +3605,6 @@ self.addEventListener('message', e => {
     banner.classList.remove('visible');
   }
 
-  // Android / Chrome — evento nativo
   window.addEventListener('beforeinstallprompt', e => {
     e.preventDefault();
     deferredPrompt = e;
@@ -3834,22 +3627,19 @@ self.addEventListener('message', e => {
     localStorage.setItem(DISMISSED_KEY, Date.now().toString());
   });
 
-  // iOS — Safari não dispara beforeinstallprompt
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
   const isInSafari = /safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent);
   if (isIOS && isInSafari && !isStandalone()) {
     subText.innerHTML = 'Toque em <strong>Compartilhar ↑</strong> e depois <strong>"Tela de Início"</strong>.';
-    installBtn.style.display = 'none'; // iOS não tem API de install
+    installBtn.style.display = 'none';
     showBanner();
   }
 
-  // Confirma quando instalado
   window.addEventListener('appinstalled', () => {
     hideBanner();
     showToast('Honorda instalado com sucesso!');
   });
 })();
-
 
 /* ════════════════════════════════════════════════════
    INIT
@@ -3866,7 +3656,6 @@ buildDynamicElements();
 renderIndex();
 setModalType('survivor');
 
-// Init gist sync
 (async function() {
   const token = getGistToken();
   if (!token) return;
@@ -3876,7 +3665,7 @@ setModalType('survivor');
 })();
 if (getGistToken() && navigator.onLine) startSmartGistMonitor();
 
-console.log('%cHONORDA v6 — Sistema iniciado com Cloud Sync. Bem-vindo, Sobrevivente.', 'color:#8b1010;font-family:serif;font-size:13px;');
+console.log('%cHONORDA v6 — Sistema iniciado. Bem-vindo, Sobrevivente.', 'color:#8b1010;font-family:serif;font-size:13px;');
 </script>
 </body>
 </html>
