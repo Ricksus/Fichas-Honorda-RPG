@@ -2145,7 +2145,7 @@ const TECNICAS = [
 let currentCharId = null;
 let currentSheetType = 'survivor';
 let saveTimeout = null;
-
+let isAppLoadingData = false;
 /* ════════════════════════════════════════════════════
    GERENCIAMENTO DE PERSONAGENS (INDEX)
 ════════════════════════════════════════════════════ */
@@ -2609,6 +2609,7 @@ function collectSheetData() {
 }
 
 function loadSheet(id) {
+  isAppLoadingData = true; // <-- BLOQUEIA GATILHOS DE SALVAMENTO AO ABRIR A FICHA
   const data = getCharData(id);
 
   document.querySelectorAll('#screen-sheet input[id], #screen-sheet textarea[id]').forEach(el => {
@@ -2680,6 +2681,8 @@ function loadSheet(id) {
   recalcAll();
   recalcAllCrits();
   recalcCreature();
+  
+  isAppLoadingData = false; // <-- LIBERA O SALVAMENTO APÓS CARREGAR
 }
 
 function flushSave() {
@@ -2687,6 +2690,12 @@ function flushSave() {
   clearTimeout(saveTimeout);
   const data = collectSheetData();
   saveCharData(currentCharId, data);
+}
+
+function schedSave() {
+  if (isAppLoadingData) return; // <-- SE ESTIVER CARREGANDO, IGNORA O SALVAMENTO
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(flushSave, 400);
 }
 
 function schedSave() {
@@ -3301,15 +3310,13 @@ async function pushToGist(silent) {
       res = await fetch('https://api.github.com/gists/' + gistId, {
         method: 'PATCH',
         headers: { Authorization: 'token ' + token, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ files: { [GIST_FILENAME]: { content: payload } } }),
-        keepalive: true
+        body: JSON.stringify({ files: { [GIST_FILENAME]: { content: payload } } })
       });
     } else {
       res = await fetch('https://api.github.com/gists', {
         method: 'POST',
         headers: { Authorization: 'token ' + token, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ description: 'Honorda RPG Fichas', public: false, files: { [GIST_FILENAME]: { content: payload } } }),
-        keepalive: true
+        body: JSON.stringify({ description: 'Honorda RPG Fichas', public: false, files: { [GIST_FILENAME]: { content: payload } } })
       });
     }
     if (!res.ok) throw new Error('HTTP ' + res.status);
