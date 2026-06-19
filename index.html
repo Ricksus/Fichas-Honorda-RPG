@@ -29,7 +29,7 @@
   --gold-glow:    rgba(154,112,32,0.4);
   --text:         #cac3b4;
   --text-dim:     #6a6258;
-  --text-bright:  #e8e0d0;
+  --text-bright:  #cec6b6;
   --line:         rgba(110,60,40,0.3);
   --input-bg:     rgba(255,255,255,0.025);
   --ff-title:     'Cinzel Decorative', serif;
@@ -627,7 +627,7 @@ input[type="checkbox"] { display: none; }
   font-size: 9px;
   letter-spacing: 4px;
   text-transform: uppercase;
-  color: var(--text-dim);
+  color: var(--text-bright);
   padding: 9px 14px 7px;
   border-bottom: 1px solid var(--line);
   display: flex;
@@ -662,7 +662,7 @@ input[type="checkbox"] { display: none; }
   font-size: 9px;
   letter-spacing: 4px;
   text-transform: uppercase;
-  color: var(--text-dim);
+  color: var(--text-bright);
   text-align: center;
   padding-bottom: 6px;
   border-bottom: 1px solid var(--line);
@@ -790,7 +790,7 @@ input[type="checkbox"] { display: none; }
   font-size: 8px;
   letter-spacing: 3px;
   text-transform: uppercase;
-  color: var(--text-dim);
+  color: var(--text-bright);
   margin-bottom: 8px;
 }
 .estado-calc-hint {
@@ -821,6 +821,47 @@ input[type="checkbox"] { display: none; }
 .estado-labels span { font-size: 7px; letter-spacing: 2px; color: var(--text-dim); text-align: center; text-transform: uppercase; }
 .carne-atual { color: #cc4444 !important; }
 .energia-atual { color: #5588dd !important; }
+
+/* Caixinha de ajuste rápido (+/-) */
+.ajuste-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 1px dashed var(--line);
+}
+.ajuste-row input {
+  width: 52px;
+  flex-shrink: 0;
+  text-align: center;
+  font-family: var(--ff-head) !important;
+  font-size: 11px !important;
+  font-style: normal;
+  padding: 4px 2px !important;
+  letter-spacing: 1px;
+}
+.ajuste-row input::placeholder { color: var(--text-dim); opacity: 0.6; }
+.ajuste-btn {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--panel-border);
+  color: var(--text-dim);
+  font-family: var(--ff-head);
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 6px 9px;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.ajuste-btn:hover {
+  color: var(--text-bright);
+  border-color: var(--red);
+  box-shadow: 0 0 8px var(--red-glow);
+}
 
 /* Pontos Extremos e Corrompidos */
 .pontos-extras-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -883,7 +924,7 @@ input[type="checkbox"] { display: none; }
   font-size: 8px;
   letter-spacing: 3px;
   text-transform: uppercase;
-  color: var(--text-dim);
+  color: var(--text-bright);
   margin-bottom: 8px;
 }
 .nivel-square {
@@ -917,7 +958,7 @@ input[type="checkbox"] { display: none; }
 .nivel-circle input { border-radius: 50%; }
 .sub-label {
   font-size: 7px; letter-spacing: 2px; text-transform: uppercase;
-  color: var(--text-dim); margin-bottom: 6px; display: block;
+  color: var(--text-bright); margin-bottom: 6px; display: block;
 }
 .essencia-row { display: flex; justify-content: center; gap: 8px; margin-bottom: 10px; }
 .essencia-dot {
@@ -936,10 +977,11 @@ input[type="checkbox"] { display: none; }
 .xp-row input { text-align: center; font-size: 11px; }
 
 /* Especialidades */
-.esp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px 18px; }
+.esp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; align-items: start; }
+.esp-col { display: flex; flex-direction: column; gap: 4px; }
 .esp-group-title {
   font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
-  color: var(--text-dim); grid-column: 1/-1; padding-top: 5px;
+  color: var(--text-bright); grid-column: 1/-1; padding-top: 5px;
   border-top: 1px solid var(--line); margin-top: 2px;
 }
 .esp-group-title:first-child { border-top: none; padding-top: 0; margin-top: 0; }
@@ -967,22 +1009,14 @@ input[type="checkbox"] { display: none; }
 }
 
 /* Equipamentos */
-.equip-table { width: 100%; border-collapse: collapse; }
-.equip-table th {
-  font-family: var(--ff-head); font-size: 7px; letter-spacing: 2px;
-  text-transform: uppercase; color: var(--text-dim);
-  padding: 4px 5px; border-bottom: 1px solid var(--line); text-align: left; font-weight: 400;
-}
-.equip-table td { padding: 1px 3px; border-bottom: 1px solid rgba(70,40,30,0.12); }
-.equip-table td input { font-size: 10px; padding: 3px 4px; border-bottom: none; }
-.equip-table tr:hover td { background: rgba(100,0,0,0.04); }
+/* equip-table removed — now using card-based system */
 .hiestas-row {
   display: flex; align-items: center; gap: 8px;
   margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--line);
 }
 .hiestas-label {
   font-family: var(--ff-head); font-size: 8px; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--text-dim); flex-shrink: 0;
+  text-transform: uppercase; color: #ffffff; flex-shrink: 0;
 }
 
 /* ── COLUNA DIREITA ── */
@@ -991,7 +1025,7 @@ input[type="checkbox"] { display: none; }
 .res-group:last-child { margin-bottom: 0; }
 .res-group-title {
   font-size: 7px; letter-spacing: 3px; text-transform: uppercase;
-  color: var(--text-dim); margin-bottom: 6px; padding-bottom: 3px;
+  color: var(--text-bright); margin-bottom: 6px; padding-bottom: 3px;
   border-bottom: 1px solid var(--line);
 }
 .res-item { display: flex; justify-content: space-between; align-items: center; padding: 2px 0; }
@@ -1161,7 +1195,7 @@ input[type="checkbox"] { display: none; }
 .inv-row {
   display: flex; align-items: center; gap: 6px;
   margin-left: auto; font-family: var(--ff-head);
-  font-size: 9px; color: var(--text-dim); letter-spacing: 1px;
+  font-size: 9px; color: #ffffff; letter-spacing: 1px;
 }
 .inv-row input { width: 26px; text-align: center; font-size: 11px; padding: 2px; }
 
@@ -1322,6 +1356,37 @@ input[type="checkbox"] { display: none; }
   font-size: 10px; padding: 2px 7px; cursor: pointer; transition: all .2s; flex-shrink: 0;
 }
 .acao-remove-btn:hover { border-color: var(--red-bright); color: #ff4444; }
+.card-toggle-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  flex-shrink: 0; width: 14px; color: var(--text-dim); font-size: 11px;
+  line-height: 1; user-select: none; transition: transform .2s ease, color .2s ease;
+  transform: rotate(180deg);
+}
+.equip-card.card-collapsed .card-toggle-icon,
+.hab-surv-card.card-collapsed .card-toggle-icon,
+.energia-surv-card.card-collapsed .card-toggle-icon {
+  transform: rotate(0deg);
+}
+.equip-card.card-collapsed .equip-fields,
+.hab-surv-card.card-collapsed .acao-fields,
+.energia-surv-card.card-collapsed .acao-fields {
+  display: none;
+}
+.equip-card-header, .acao-card-header { cursor: pointer; }
+.equip-card-header:hover .card-toggle-icon,
+.acao-card-header:hover .card-toggle-icon {
+  color: var(--text-bright);
+}
+.equip-card-header input, .equip-card-header select, .equip-card-header button,
+.acao-card-header input, .acao-card-header select, .acao-card-header button {
+  cursor: auto;
+}
+.equip-name-input, .acao-name-input, .energia-name-input { cursor: text; }
+.equip-card.card-collapsed .equip-card-header,
+.hab-surv-card.card-collapsed .acao-card-header,
+.energia-surv-card.card-collapsed .acao-card-header {
+  margin-bottom: 0;
+}
 .acao-fields { display: grid; gap: 6px; }
 .acao-field-row { display: flex; align-items: center; gap: 8px; }
 .acao-field-label {
@@ -1338,6 +1403,88 @@ input[type="checkbox"] { display: none; }
 }
 .btn-add-acao:hover { border-color: var(--red); color: var(--text); }
 .btn-add-acao.gold:hover { border-color: var(--gold-light); color: var(--gold-light); }
+
+/* ══════════════════════════════════════════════════
+   EQUIPAMENTO — CARDS DINÂMICOS
+══════════════════════════════════════════════════ */
+.equip-card {
+  background: rgba(10,8,14,0.8); border: 1px solid var(--line);
+  padding: 10px 12px; position: relative; transition: border-color .2s;
+  margin-bottom: 8px; border-left: 3px solid rgba(154,112,32,0.5);
+}
+.equip-card:hover { border-color: rgba(154,112,32,0.4); }
+.equip-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.equip-type-tag {
+  font-family: var(--ff-head); font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
+  padding: 2px 8px; border: 1px solid rgba(140,110,30,0.5); color: var(--gold-light);
+  background: rgba(120,90,20,0.1); flex-shrink: 0;
+}
+.equip-name-input {
+  flex: 1; font-size: 13px; font-family: var(--ff-head); color: var(--text-bright);
+  background: transparent; border: none; border-bottom: 1px solid var(--line); padding: 2px 4px;
+}
+.equip-name-input:focus { outline: none; border-bottom-color: var(--gold-light); box-shadow: 0 2px 8px var(--gold-glow); }
+.equip-fields { display: grid; gap: 5px; }
+.equip-field-row { display: flex; align-items: flex-start; gap: 8px; }
+.equip-field-label {
+  font-family: var(--ff-head); font-size: 8px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--text-dim); flex-shrink: 0; min-width: 72px; padding-top:3px;
+}
+.equip-field-input { flex: 1; font-size: 12px; }
+.equip-empunhadura-select {
+  flex: 1; background: var(--input-bg); border: none;
+  border-bottom: 1px solid var(--line); color: var(--text-bright);
+  font-family: var(--ff-body); font-size: 12px; padding: 3px 6px;
+  cursor: pointer; transition: border-color .2s;
+}
+.equip-empunhadura-select:focus { outline:none; border-bottom-color: var(--gold-light); }
+.equip-empunhadura-select option { background: #0d0b10; color: var(--text-bright); }
+
+/* ══════════════════════════════════════════════════
+   HABILIDADES SOBREVIVENTE — CARDS
+══════════════════════════════════════════════════ */
+.hab-surv-card {
+  background: rgba(10,8,14,0.8); border: 1px solid var(--line);
+  padding: 10px 12px; position: relative; transition: border-color .2s;
+  margin-bottom: 8px; border-left: 3px solid var(--gold);
+}
+.hab-surv-card:hover { border-color: rgba(154,112,32,0.5); }
+
+/* ══════════════════════════════════════════════════
+   ENERGIAS SOBREVIVENTE — CARDS
+══════════════════════════════════════════════════ */
+.energia-surv-card {
+  background: rgba(10,8,14,0.8); border: 1px solid var(--line);
+  padding: 10px 12px; position: relative; transition: border-color .2s;
+  margin-bottom: 8px; border-left: 3px solid #3060a0;
+}
+.energia-surv-card:hover { border-color: rgba(60,100,180,0.5); }
+.energia-type-tag {
+  font-family: var(--ff-head); font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
+  padding: 2px 8px; border: 1px solid rgba(60,100,180,0.5); color: #6090d0;
+  background: rgba(40,70,130,0.1); flex-shrink: 0;
+}
+.energia-name-input {
+  flex: 1; font-size: 13px; font-family: var(--ff-head); color: var(--text-bright);
+  background: transparent; border: none; border-bottom: 1px solid var(--line); padding: 2px 4px;
+}
+.energia-name-input:focus { outline: none; border-bottom-color: #6090d0; box-shadow: 0 2px 8px rgba(60,100,200,0.3); }
+.energia-cap-select {
+  flex: 1; background: var(--input-bg); border: none;
+  border-bottom: 1px solid var(--line); color: var(--text-bright);
+  font-family: var(--ff-body); font-size: 12px; padding: 3px 6px;
+  cursor: pointer; transition: border-color .2s;
+}
+.energia-cap-select:focus { outline:none; border-bottom-color: #6090d0; }
+.energia-cap-select option { background: #0d0b10; color: var(--text-bright); }
+.energia-efeitos-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 5px 12px;
+}
+.energia-efeito-label {
+  font-family: var(--ff-head); font-size: 8px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--text-dim); margin-bottom: 2px;
+}
+.energia-efeito-label.corrupto { color: #b070d0; }
 
 .corrompidos-editavel { color: #b070b0 !important; }
 
@@ -1383,7 +1530,6 @@ input[type="checkbox"] { display: none; }
   .occ-row { grid-template-columns: 1fr; gap: 10px; }
   .page2-grid { grid-template-columns: 1fr; }
   .page3-grid { grid-template-columns: 1fr; }
-  .equip-table th:nth-child(3), .equip-table td:nth-child(3) { display: none; }
   .nd-row { grid-template-columns: 1fr 1fr; }
   #ctab-1 > div { grid-template-columns: 1fr !important; }
   .choque-grid { grid-template-columns: 1fr; }
@@ -1423,7 +1569,6 @@ input[type="checkbox"] { display: none; }
   .diamond-check { width: 13px; height: 13px; }
   .panel-body { padding: 10px; }
   .esp-grid { grid-template-columns: 1fr; }
-  .equip-table th:nth-child(4), .equip-table td:nth-child(4) { display: none; }
   .nd-row { grid-template-columns: 1fr; }
   .nd-box { display: flex; align-items: center; gap: 12px; text-align: left; padding: 10px; }
   .nd-square { margin: 0; }
@@ -1556,7 +1701,7 @@ input[type="checkbox"] { display: none; }
 
         <div class="apt-item">
           <div class="apt-label">Físico</div>
-          <div class="apt-ring"><input type="number" id="apt_fisico" min="0" max="6" oninput="recalcAll()"></div>
+          <div class="apt-ring"><input type="number" id="apt_fisico" min="1" max="6" oninput="recalcAll()"></div>
           <div class="apt-crit">
             <span class="apt-crit-label">Crítico</span>
             <div class="crit-ring crit-display" id="apt_fisico_crit">—</div>
@@ -1565,7 +1710,7 @@ input[type="checkbox"] { display: none; }
 
         <div class="apt-item">
           <div class="apt-label">Destreza</div>
-          <div class="apt-ring"><input type="number" id="apt_destreza" min="0" max="6" oninput="recalcCrit('apt_destreza')"></div>
+          <div class="apt-ring"><input type="number" id="apt_destreza" min="1" max="6" oninput="recalcCrit('apt_destreza')"></div>
           <div class="apt-crit">
             <span class="apt-crit-label">Crítico</span>
             <div class="crit-ring crit-display" id="apt_destreza_crit">—</div>
@@ -1574,7 +1719,7 @@ input[type="checkbox"] { display: none; }
 
         <div class="apt-item">
           <div class="apt-label">Mental</div>
-          <div class="apt-ring"><input type="number" id="apt_mental" min="0" max="6" oninput="recalcCrit('apt_mental')"></div>
+          <div class="apt-ring"><input type="number" id="apt_mental" min="1" max="6" oninput="recalcCrit('apt_mental')"></div>
           <div class="apt-crit">
             <span class="apt-crit-label">Crítico</span>
             <div class="crit-ring crit-display" id="apt_mental_crit">—</div>
@@ -1583,7 +1728,7 @@ input[type="checkbox"] { display: none; }
 
         <div class="apt-item">
           <div class="apt-label">Presença</div>
-          <div class="apt-ring"><input type="number" id="apt_presenca" min="0" max="6" oninput="recalcCrit('apt_presenca')"></div>
+          <div class="apt-ring"><input type="number" id="apt_presenca" min="1" max="6" oninput="recalcCrit('apt_presenca')"></div>
           <div class="apt-crit">
             <span class="apt-crit-label">Crítico</span>
             <div class="crit-ring crit-display" id="apt_presenca_crit">—</div>
@@ -1592,7 +1737,7 @@ input[type="checkbox"] { display: none; }
 
         <div class="apt-item">
           <div class="apt-label">Alma</div>
-          <div class="apt-ring"><input type="number" id="apt_alma" min="0" max="6" oninput="recalcCrit('apt_alma')"></div>
+          <div class="apt-ring"><input type="number" id="apt_alma" min="1" max="6" oninput="recalcCrit('apt_alma')"></div>
           <div class="apt-crit">
             <span class="apt-crit-label">Crítico</span>
             <div class="crit-ring crit-display" id="apt_alma_crit">—</div>
@@ -1632,16 +1777,24 @@ input[type="checkbox"] { display: none; }
                 <input type="number" id="carne_total" min="0">
               </div>
               <div class="estado-labels"><span>Atual</span><span></span><span>Total</span></div>
+              <div class="ajuste-row">
+                <input type="text" id="carne_ajuste" placeholder="+/-" maxlength="5" oninput="sanitizeAjusteInput(this)" onkeydown="if(event.key==='Enter'){event.preventDefault();applyAjuste('carne_atual','carne_ajuste','carne_total');}">
+                <button type="button" class="ajuste-btn" onclick="applyAjuste('carne_atual','carne_ajuste','carne_total')">Aplicar</button>
+              </div>
             </div>
             <div class="estado-box" style="border:1px solid rgba(40,70,160,0.25);">
               <div class="estado-title">Pontos de Energia</div>
-              <div class="estado-calc-hint" id="energia-formula">8 + Físico</div>
+              <div class="estado-calc-hint" id="energia-formula">8 + Alma</div>
               <div class="estado-inputs">
                 <input type="number" id="energia_atual" class="energia-atual" min="0">
                 <span class="estado-sep">/</span>
                 <input type="number" id="energia_total" min="0">
               </div>
               <div class="estado-labels"><span>Atual</span><span></span><span>Total</span></div>
+              <div class="ajuste-row">
+                <input type="text" id="energia_ajuste" placeholder="+/-" maxlength="5" oninput="sanitizeAjusteInput(this)" onkeydown="if(event.key==='Enter'){event.preventDefault();applyAjuste('energia_atual','energia_ajuste','energia_total');}">
+                <button type="button" class="ajuste-btn" onclick="applyAjuste('energia_atual','energia_ajuste','energia_total')">Aplicar</button>
+              </div>
             </div>
           </div>
         </div>
@@ -1686,7 +1839,7 @@ input[type="checkbox"] { display: none; }
         <div class="niveis-row">
           <div class="nivel-box" style="border:1px solid rgba(80,50,25,0.35);">
             <div class="nivel-label">Nível de Alma</div>
-            <div class="nivel-square"><input type="number" id="nivel_alma" min="0"></div>
+            <div class="nivel-square"><input type="number" id="nivel_alma" min="1" max="10" oninput="onNivelAlmaChange()"></div>
             <span class="sub-label">Essência de Alma</span>
             <div class="essencia-row">
               <div class="essencia-dot" data-id="essencia_1"></div>
@@ -1696,11 +1849,11 @@ input[type="checkbox"] { display: none; }
           </div>
           <div class="nivel-box" style="border:1px solid rgba(80,50,25,0.35);">
             <div class="nivel-label">Nível de Sobrevivente</div>
-            <div class="nivel-circle"><input type="number" id="nivel_sobrevivente" min="0"></div>
+            <div class="nivel-circle"><input type="number" id="nivel_sobrevivente" min="1" max="10" oninput="onNivelSobreviventeChange()"></div>
             <span class="sub-label">Pontos de Experiência</span>
             <div class="xp-row">
-              <input type="number" id="xp_atual" placeholder="Atual" min="0">
-              <input type="number" id="xp_total" placeholder="Total" min="0">
+              <input type="number" id="xp_atual" placeholder="Atual" min="0" oninput="onXpAtualChange()">
+              <input type="number" id="xp_total" placeholder="Próx. Nível" min="0" readonly style="opacity:0.7;">
             </div>
           </div>
         </div>
@@ -1710,24 +1863,31 @@ input[type="checkbox"] { display: none; }
           <div class="panel-title">Especialidades</div>
           <div class="panel-body">
             <div class="esp-grid">
-              <div class="esp-group-title" style="border:none;padding:0;margin:0;">Técnicas Especiais</div>
-              <div class="esp-group-title" style="border:none;padding:0;margin:0;">Proteções</div>
-              <label class="check-label" data-id="esp_armasbrancas"><div class="check-box"></div>Armas Brancas</label>
-              <label class="check-label" data-id="prot_leve"><div class="check-box"></div>Leve</label>
-              <label class="check-label" data-id="esp_armasfogo"><div class="check-box"></div>Armas de Fogo</label>
-              <label class="check-label" data-id="prot_media"><div class="check-box"></div>Média</label>
-              <label class="check-label" data-id="esp_armasdisparo"><div class="check-box"></div>Armas de Disparo</label>
-              <label class="check-label" data-id="prot_fortificada"><div class="check-box"></div>Fortificada</label>
-              <label class="check-label" data-id="esp_explosivos"><div class="check-box"></div>Explosivos</label>
-              <label class="check-label" data-id="prot_troglodita"><div class="check-box"></div>Troglodita</label>
-              <label class="check-label" data-id="esp_robotica"><div class="check-box"></div>Robótica</label>
-              <div class="esp-group-title" style="grid-column:2;border-top:1px solid var(--line);padding-top:5px;margin-top:2px;">Armamentos</div>
-              <label class="check-label" data-id="esp_computacao"><div class="check-box"></div>Computação</label>
-              <label class="check-label" data-id="arm_simples"><div class="check-box"></div>Simples</label>
-              <label class="check-label" data-id="esp_engmecanica"><div class="check-box"></div>Eng. Mecânica</label>
-              <label class="check-label" data-id="arm_medianas"><div class="check-box"></div>Medianas</label>
-              <label class="check-label" data-id="esp_alquimia"><div class="check-box"></div>Alquimia</label>
-              <label class="check-label" data-id="arm_complexas"><div class="check-box"></div>Complexas</label>
+              <!-- Coluna esquerda: Técnicas Especiais | Coluna direita: Proteções -->
+              <!-- Técnicas Especiais (coluna esquerda) -->
+              <div class="esp-col">
+                <div class="esp-group-title" style="border:none;padding:0;margin:0 0 4px 0;">Técnicas Especiais</div>
+                <label class="check-label" data-id="esp_armasbrancas"><div class="check-box"></div>Armas Brancas</label>
+                <label class="check-label" data-id="esp_armasfogo"><div class="check-box"></div>Armas de Fogo</label>
+                <label class="check-label" data-id="esp_armasdisparo"><div class="check-box"></div>Armas de Disparo</label>
+                <label class="check-label" data-id="esp_explosivos"><div class="check-box"></div>Explosivos</label>
+                <label class="check-label" data-id="esp_robotica"><div class="check-box"></div>Robótica</label>
+                <label class="check-label" data-id="esp_computacao"><div class="check-box"></div>Computação</label>
+                <label class="check-label" data-id="esp_engmecanica"><div class="check-box"></div>Eng. Mecânica</label>
+                <label class="check-label" data-id="esp_alquimia"><div class="check-box"></div>Alquimia</label>
+              </div>
+              <!-- Proteções (coluna direita) -->
+              <div class="esp-col">
+                <div class="esp-group-title" style="border:none;padding:0;margin:0 0 4px 0;">Proteções</div>
+                <label class="check-label" data-id="prot_leve"><div class="check-box"></div>Leve</label>
+                <label class="check-label" data-id="prot_media"><div class="check-box"></div>Média</label>
+                <label class="check-label" data-id="prot_fortificada"><div class="check-box"></div>Fortificada</label>
+                <label class="check-label" data-id="prot_troglodita"><div class="check-box"></div>Troglodita</label>
+                <div class="esp-group-title" style="border-top:1px solid var(--line);padding-top:5px;margin-top:6px;">Equipamento</div>
+                <label class="check-label" data-id="arm_simples"><div class="check-box"></div>Simples</label>
+                <label class="check-label" data-id="arm_medianas"><div class="check-box"></div>Medianas</label>
+                <label class="check-label" data-id="arm_complexas"><div class="check-box"></div>Complexas</label>
+              </div>
             </div>
           </div>
         </div>
@@ -1737,21 +1897,15 @@ input[type="checkbox"] { display: none; }
           <div class="panel-title">
             Equipamentos
             <div class="inv-row">
-              Inventário <input type="number" id="inv_atual"> / <input type="number" id="inv_total">
+              Espaço <input type="number" id="inv_atual" readonly style="opacity:0.7;pointer-events:none;"> / <input type="number" id="inv_total" readonly style="opacity:0.7;pointer-events:none;">
             </div>
           </div>
           <div class="panel-body">
-            <table class="equip-table">
-              <thead>
-                <tr>
-                  <th style="width:28%">Nome</th>
-                  <th style="width:36%">Efeito</th>
-                  <th style="width:22%">Materiais</th>
-                  <th style="width:14%">Peso</th>
-                </tr>
-              </thead>
-              <tbody id="equip-tbody"></tbody>
-            </table>
+            <div id="equip-list"></div>
+            <div class="acoes-add-row" style="margin-top:8px;">
+              <button class="btn-add-acao" onclick="addEquip()">+ Item</button>
+              <button class="btn-add-acao" onclick="addEquipSimples()">+ Item Simples</button>
+            </div>
             <div class="hiestas-row">
               <span class="hiestas-label">Hiestas:</span>
               <input type="text" id="hiestas">
@@ -1807,7 +1961,12 @@ input[type="checkbox"] { display: none; }
       <div>
         <div class="panel mb16">
           <div class="panel-title">Habilidades</div>
-          <div class="panel-body"><textarea class="lined-textarea" id="txt_habilidades" style="min-height:280px;"></textarea></div>
+          <div class="panel-body">
+            <div id="habilidades-surv-list"></div>
+            <div class="acoes-add-row">
+              <button class="btn-add-acao gold" onclick="addHabilidadeSurv()">+ Habilidade</button>
+            </div>
+          </div>
         </div>
         <div class="panel">
           <div class="panel-title">Anatemias</div>
@@ -1817,7 +1976,12 @@ input[type="checkbox"] { display: none; }
       <div>
         <div class="panel mb16">
           <div class="panel-title">Energias</div>
-          <div class="panel-body"><textarea class="lined-textarea" id="txt_energias" style="min-height:200px;"></textarea></div>
+          <div class="panel-body">
+            <div id="energias-surv-list"></div>
+            <div class="acoes-add-row">
+              <button class="btn-add-acao" style="border-color:rgba(40,80,140,0.5);color:#6090d0;" onclick="addEnergiaSurv()">+ Energia</button>
+            </div>
+          </div>
         </div>
         <div class="panel">
           <div class="panel-title">Símbolos</div>
@@ -1943,6 +2107,10 @@ input[type="checkbox"] { display: none; }
                   <input type="number" id="c_carne_total" min="0" oninput="autoSave()">
                 </div>
                 <div class="estado-labels"><span>Atual</span><span></span><span>Total</span></div>
+                <div class="ajuste-row">
+                  <input type="text" id="c_carne_ajuste" placeholder="+/-" maxlength="5" oninput="sanitizeAjusteInput(this)" onkeydown="if(event.key==='Enter'){event.preventDefault();applyAjuste('c_carne_atual','c_carne_ajuste','c_carne_total');}">
+                  <button type="button" class="ajuste-btn" onclick="applyAjuste('c_carne_atual','c_carne_ajuste','c_carne_total')">Aplicar</button>
+                </div>
               </div>
             </div>
           </div>
@@ -1956,6 +2124,10 @@ input[type="checkbox"] { display: none; }
             <input type="number" id="c_corrompidos_total" class="corrompidos-editavel" min="0" oninput="autoSave()">
           </div>
           <div class="estado-labels"><span>Atual</span><span></span><span>Total</span></div>
+          <div class="ajuste-row">
+            <input type="text" id="c_corrompidos_ajuste" placeholder="+/-" maxlength="5" oninput="sanitizeAjusteInput(this)" onkeydown="if(event.key==='Enter'){event.preventDefault();applyAjuste('c_corrompidos_atual','c_corrompidos_ajuste','c_corrompidos_total');}">
+            <button type="button" class="ajuste-btn" onclick="applyAjuste('c_corrompidos_atual','c_corrompidos_ajuste','c_corrompidos_total')">Aplicar</button>
+          </div>
         </div>
 
         <div class="choque-panel panel-body">
@@ -2132,7 +2304,7 @@ input[type="checkbox"] { display: none; }
 const STORE_KEY = 'honorda_chars_v3';
 const CHAR_PREFIX = 'honorda_char_v3_';
 
-const TECNICAS_ZERO = new Set(['Arte','Ciências','Linguagem','Pilotagem','Tecnologia','Poder','Religião']);
+const TECNICAS_ZERO = new Set(['Arte','Ciências','Linguagem','Pilotagem','Tecnologia','Poder','Religião','Medicina']);
 
 const TECNICAS = [
   "Acrobacia","Adestramento","Analisar","Armas Brancas","Armas de Fogo",
@@ -2310,6 +2482,11 @@ function createNewChar() {
     initData.res_bloqueio = 1; initData.res_esquiva = 1; initData.res_revidar = 1;
     initData.res_constituicao = 1; initData.res_emocional = 1; initData.res_obscura = 1;
     initData.extremos_atual = 0; initData.extremos_total = 30; initData.corrompidos_atual = 0;
+    // Aptidões iniciam em 2
+    initData.apt_fisico = 2; initData.apt_destreza = 2; initData.apt_mental = 2;
+    initData.apt_presenca = 2; initData.apt_alma = 2;
+    // Níveis mínimos
+    initData.nivel_alma = 1; initData.nivel_sobrevivente = 1;
   } else {
     TECNICAS.forEach((t, i) => { initData[`c_tec_${i}`] = TECNICAS_ZERO.has(t) ? 0 : 1; });
     initData.c_res_bloqueio = 1; initData.c_res_esquiva = 1; initData.c_res_revidar = 1;
@@ -2376,18 +2553,7 @@ function buildDynamicElements() {
     diamondsRow.appendChild(d);
   }
 
-  const equipTbody = document.getElementById('equip-tbody');
-  equipTbody.innerHTML = '';
-  for (let i = 1; i <= 12; i++) {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td><input type="text" id="eq_nome_${i}"></td>
-      <td><input type="text" id="eq_efeito_${i}"></td>
-      <td><input type="text" id="eq_mat_${i}"></td>
-      <td><input type="number" id="eq_peso_${i}" style="width:100%"></td>
-    `;
-    equipTbody.appendChild(tr);
-  }
+  // equip-list is now dynamic via addEquip()
 
   const tecBody = document.getElementById('tecnicas-body');
   tecBody.innerHTML = '';
@@ -2421,12 +2587,7 @@ function buildDynamicElements() {
     });
   });
 
-  document.querySelectorAll('.essencia-dot').forEach(el => {
-    el.addEventListener('click', () => {
-      el.classList.toggle('checked');
-      schedSave();
-    });
-  });
+  setupEssencias();
 
   const cTecBody = document.getElementById('c-tecnicas-body');
   if (cTecBody) {
@@ -2491,21 +2652,38 @@ function recalcCreature() {
 function recalcAll() {
   const fisico = parseInt(document.getElementById('apt_fisico').value) || 0;
   const const_ = parseInt(document.getElementById('res_constituicao').value) || 0;
+  const alma = parseInt(document.getElementById('apt_alma').value) || 0;
 
   const carne = 6 + fisico + const_;
-  const energia = 8 + fisico;
+  const energia = 8 + alma;
 
   document.getElementById('carne-formula').textContent = `6 + ${fisico} + ${const_} = ${carne}`;
-  document.getElementById('energia-formula').textContent = `8 + ${fisico} = ${energia}`;
+  document.getElementById('energia-formula').textContent = `8 + ${alma} = ${energia}`;
 
   const carneTotal = document.getElementById('carne_total');
   const energiaTotal = document.getElementById('energia_total');
   if (!carneTotal.dataset.manualEdit) carneTotal.value = carne;
   if (!energiaTotal.dataset.manualEdit) energiaTotal.value = energia;
 
+  const invTotal = document.getElementById('inv_total');
+  if (invTotal) invTotal.value = fisico * 3;
+
+  recalcInvAtual();
   recalcCorrompidos();
   recalcAllCrits();
   schedSave();
+}
+
+function recalcInvAtual() {
+  let total = 0;
+  document.querySelectorAll('.equip-card').forEach(card => {
+    const id = card.dataset.equipId;
+    const raw = (document.getElementById(`eq_peso_${id}`)?.value || '').toString().replace(',', '.');
+    const val = parseFloat(raw);
+    if (!isNaN(val)) total += val;
+  });
+  const invAtual = document.getElementById('inv_atual');
+  if (invAtual) invAtual.value = Number.isInteger(total) ? total : parseFloat(total.toFixed(2));
 }
 
 function getMaxMarcas() {
@@ -2540,6 +2718,40 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+
+/* ════════════════════════════════════════════════════
+   AJUSTE RÁPIDO (+/-) — Carne, Energia e Corrompidos
+════════════════════════════════════════════════════ */
+function sanitizeAjusteInput(el) {
+  // Permite apenas dígitos e os sinais + e -
+  el.value = el.value.replace(/[^0-9+\-]/g, '');
+}
+
+function applyAjuste(atualId, ajusteId, totalId) {
+  const ajusteEl = document.getElementById(ajusteId);
+  const atualEl = document.getElementById(atualId);
+  if (!ajusteEl || !atualEl) return;
+
+  const raw = ajusteEl.value.trim();
+  if (raw === '' || raw === '+' || raw === '-') { ajusteEl.value = ''; return; }
+
+  const delta = parseInt(raw, 10);
+  if (isNaN(delta)) { ajusteEl.value = ''; return; }
+
+  let atual = parseInt(atualEl.value, 10) || 0;
+  atual += delta;
+  if (atual < 0) atual = 0;
+
+  if (totalId) {
+    const totalEl = document.getElementById(totalId);
+    const total = parseInt(totalEl?.value, 10);
+    if (!isNaN(total) && atual > total) atual = total;
+  }
+
+  atualEl.value = atual;
+  ajusteEl.value = '';
+  schedSave();
+}
 
 /* ════════════════════════════════════════════════════
    TABS
@@ -2603,6 +2815,9 @@ function collectSheetData() {
   }
 
   data['__acoes'] = collectAcoes();
+  data['__equips'] = collectEquips();
+  data['__habsSurv'] = collectHabilidadesSurv();
+  data['__energiasSurv'] = collectEnergiasSurv();
   data['__sheetType'] = currentSheetType;
 
   return data;
@@ -2622,6 +2837,18 @@ function loadSheet(id) {
 
   document.querySelectorAll('#screen-sheet input[id], #screen-sheet textarea[id]').forEach(el => {
     if (data[el.id] !== undefined) el.value = data[el.id];
+  });
+
+  // Trava valores de fichas antigas que possam ter passado do limite (aptidões, técnicas, resistências)
+  document.querySelectorAll('#screen-sheet input[type="number"]').forEach(el => {
+    if (el.value === '') return;
+    const maxAttr = el.getAttribute('max');
+    const minAttr = el.getAttribute('min');
+    let v = parseInt(el.value, 10);
+    if (isNaN(v)) return;
+    if (maxAttr !== null && v > parseInt(maxAttr, 10)) v = parseInt(maxAttr, 10);
+    if (minAttr !== null && v < parseInt(minAttr, 10)) v = parseInt(minAttr, 10);
+    if (String(v) !== el.value) el.value = v;
   });
 
   document.querySelectorAll('.diamond-check').forEach(el => {
@@ -2660,6 +2887,9 @@ function loadSheet(id) {
   }
 
   restoreAcoes(data['__acoes'] || []);
+  restoreEquips(data['__equips'] || []);
+  restoreHabilidadesSurv(data['__habsSurv'] || []);
+  restoreEnergiasSurv(data['__energiasSurv'] || []);
 
   currentSheetType = data['__sheetType'] || 'survivor';
   applySheetType(currentSheetType);
@@ -2676,11 +2906,32 @@ function loadSheet(id) {
     });
     const ext = document.getElementById('extremos_total');
     if (ext && !ext.value) ext.value = 30;
+    // Aptidões iniciam em 2
+    ['apt_fisico','apt_destreza','apt_mental','apt_presenca','apt_alma'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && !el.value) el.value = 2;
+    });
+    // Níveis mínimos = 1
+    const nAlma = document.getElementById('nivel_alma');
+    if (nAlma && (!nAlma.value || nAlma.value == 0)) nAlma.value = 1;
+    const nSobr = document.getElementById('nivel_sobrevivente');
+    if (nSobr && (!nSobr.value || nSobr.value == 0)) nSobr.value = 1;
   }
 
   recalcAll();
   recalcAllCrits();
   recalcCreature();
+  updateXpTotal();
+
+  // Enforce minimum values on loaded data
+  ['nivel_alma', 'nivel_sobrevivente'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && (el.value === '' || parseInt(el.value) < 1)) el.value = 1;
+  });
+  ['apt_fisico','apt_destreza','apt_mental','apt_presenca','apt_alma'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && (el.value === '' || parseInt(el.value) < 1)) el.value = 1;
+  });
   
   isAppLoadingData = false; // <-- LIBERA O SALVAMENTO APÓS CARREGAR
 }
@@ -2705,14 +2956,138 @@ function schedSave() {
 
 function autoSave() { schedSave(); }
 
+/* ════════════════════════════════════════════════════
+   SISTEMA DE NÍVEL DE ALMA
+════════════════════════════════════════════════════ */
+function onNivelAlmaChange() {
+  const el = document.getElementById('nivel_alma');
+  if (!el) return;
+  let v = parseInt(el.value, 10);
+  if (isNaN(v) || v < 1) v = 1;
+  if (v > 10) v = 10;
+  el.value = v;
+  // Desmarca todas as essências
+  document.querySelectorAll('.essencia-dot').forEach(dot => dot.classList.remove('checked'));
+  schedSave();
+}
+
+/* ════════════════════════════════════════════════════
+   SISTEMA DE NÍVEL DE SOBREVIVENTE / XP
+════════════════════════════════════════════════════ */
+function calcXpParaProxNivel(nivelAtual) {
+  return nivelAtual * 10;
+}
+
+function updateXpTotal() {
+  const nivelEl = document.getElementById('nivel_sobrevivente');
+  const xpTotalEl = document.getElementById('xp_total');
+  if (!nivelEl || !xpTotalEl) return;
+  const nivel = parseInt(nivelEl.value, 10) || 0;
+  xpTotalEl.value = calcXpParaProxNivel(nivel);
+}
+
+function onNivelSobreviventeChange() {
+  const el = document.getElementById('nivel_sobrevivente');
+  if (!el) return;
+  let v = parseInt(el.value, 10);
+  if (isNaN(v) || v < 1) v = 1;
+  if (v > 10) v = 10;
+  el.value = v;
+  // Zera XP atual ao mudar nível manualmente
+  const xpAtualEl = document.getElementById('xp_atual');
+  if (xpAtualEl) xpAtualEl.value = 0;
+  updateXpTotal();
+  schedSave();
+}
+
+function onXpAtualChange() {
+  const nivelEl = document.getElementById('nivel_sobrevivente');
+  const xpAtualEl = document.getElementById('xp_atual');
+  const xpTotalEl = document.getElementById('xp_total');
+  if (!nivelEl || !xpAtualEl || !xpTotalEl) return;
+
+  let nivel = parseInt(nivelEl.value, 10) || 0;
+  const xpNecessario = calcXpParaProxNivel(nivel);
+  let xpAtual = parseInt(xpAtualEl.value, 10);
+  if (isNaN(xpAtual) || xpAtual < 0) { xpAtual = 0; xpAtualEl.value = 0; }
+
+  // Limita ao máximo necessário
+  if (xpAtual > xpNecessario) { xpAtual = xpNecessario; xpAtualEl.value = xpAtual; }
+
+  // Se atingiu o total, sobe de nível
+  if (xpAtual >= xpNecessario) {
+    nivel = Math.min(nivel + 1, 10);
+    nivelEl.value = nivel;
+    xpAtualEl.value = 0;
+    updateXpTotal();
+    showToast('Nível de Sobrevivente aumentou para ' + nivel + '!');
+  }
+  schedSave();
+}
+
+/* ════════════════════════════════════════════════════
+   ESSÊNCIAS DE ALMA — auto-level ao marcar 3
+════════════════════════════════════════════════════ */
+function setupEssencias() {
+  document.querySelectorAll('.essencia-dot').forEach(dot => {
+    dot.addEventListener('click', function() {
+      this.classList.toggle('checked');
+      const checked = document.querySelectorAll('.essencia-dot.checked').length;
+      if (checked >= 3) {
+        // Desmarca todas e sobe nível de alma
+        document.querySelectorAll('.essencia-dot').forEach(d => d.classList.remove('checked'));
+        const nivelEl = document.getElementById('nivel_alma');
+        if (nivelEl) {
+          let nivel = parseInt(nivelEl.value, 10) || 0;
+          nivel = Math.min(nivel + 1, 10);
+          nivelEl.value = nivel;
+          showToast('Nível de Alma aumentou para ' + nivel + '!');
+        }
+      }
+      schedSave();
+    });
+  });
+}
+
+document.getElementById('screen-sheet').addEventListener('blur', e => {
+  const el = e.target;
+  if (el.tagName !== 'INPUT' || el.type !== 'number') return;
+  if (el.value === '' || el.value === null) {
+    const minAttr = el.getAttribute('min');
+    const minVal = (minAttr !== null) ? parseInt(minAttr, 10) : 0;
+    el.value = isNaN(minVal) ? 0 : minVal;
+    // Trigger recalc if needed
+    const id = el.id;
+    if (['apt_fisico','res_constituicao','apt_alma'].includes(id)) recalcAll();
+    else if (['apt_destreza','apt_mental','apt_presenca'].includes(id)) { recalcCrit(id); if (id === 'apt_mental') recalcCorrompidos(); }
+    else if (['nivel_alma'].includes(id)) onNivelAlmaChange();
+    else if (['nivel_sobrevivente'].includes(id)) onNivelSobreviventeChange();
+    schedSave();
+  }
+}, true); // capture phase so we catch it before it bubbles
+
 document.getElementById('screen-sheet').addEventListener('input', e => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
     const id = e.target.id;
+
+    // Trava campos numéricos dentro do limite definido
+    if (e.target.tagName === 'INPUT' && e.target.type === 'number' && e.target.value !== '') {
+      const maxAttr = e.target.getAttribute('max');
+      const minAttr = e.target.getAttribute('min');
+      let v = parseInt(e.target.value, 10);
+      if (!isNaN(v)) {
+        if (maxAttr !== null && v > parseInt(maxAttr, 10)) v = parseInt(maxAttr, 10);
+        if (minAttr !== null && v < parseInt(minAttr, 10)) v = parseInt(minAttr, 10);
+        if (String(v) !== e.target.value) e.target.value = v;
+      }
+    }
+
     if (['apt_fisico','res_constituicao'].includes(id)) recalcAll();
-    else if (['apt_destreza','apt_mental','apt_presenca','apt_alma'].includes(id)) {
+    else if (['apt_destreza','apt_mental','apt_presenca'].includes(id)) {
       recalcCrit(id);
       if (id === 'apt_mental') recalcCorrompidos();
     }
+    else if (id === 'apt_alma') recalcAll();
     else if (['c_apt_fisico','c_apt_destreza','c_apt_mental','c_apt_presenca','c_apt_alma'].includes(id)) {
       recalcCreatureCrit(id);
     }
@@ -2721,9 +3096,6 @@ document.getElementById('screen-sheet').addEventListener('input', e => {
   }
 });
 
-/* ════════════════════════════════════════════════════
-   EXPORT / IMPORT
-════════════════════════════════════════════════════ */
 function exportSheet() {
   if (!currentCharId) return;
   flushSave();
@@ -3013,6 +3385,276 @@ function removeAvatar() {
    AÇÕES DA CRIATURA
 ════════════════════════════════════════════════════ */
 let acaoCounter = 0;
+
+/* ════════════════════════════════════════════════════
+   MINIMIZAR / MAXIMIZAR CARDS (Itens, Habilidades, Energias)
+════════════════════════════════════════════════════ */
+function headerToggleCollapse(event) {
+  if (event.target.closest('input, select, textarea, button')) return;
+  const card = event.currentTarget.closest('.equip-card, .hab-surv-card, .energia-surv-card');
+  if (card) card.classList.toggle('card-collapsed');
+}
+
+/* ════════════════════════════════════════════════════
+   SISTEMA DE EQUIPAMENTOS (CARDS)
+════════════════════════════════════════════════════ */
+let equipCounter = 0;
+
+function addEquip(entry, tipo) {
+  const id = entry ? entry.id : ++equipCounter;
+  if (!entry) equipCounter = Math.max(equipCounter, id);
+  const isSimples = (entry ? entry.tipo : tipo) === 'simples';
+  const list = document.getElementById('equip-list');
+  const card = document.createElement('div');
+  card.className = 'equip-card';
+  card.dataset.equipId = id;
+  card.dataset.equipTipo = isSimples ? 'simples' : 'completo';
+
+  const fieldsHtml = isSimples ? `
+      <div class="equip-field-row">
+        <span class="equip-field-label">Peso</span>
+        <input class="equip-field-input" type="text" id="eq_peso_${id}" placeholder="Ex: 1" style="max-width:80px;" value="${entry?.peso||''}">
+      </div>
+      <div class="equip-field-row" style="align-items:flex-start;">
+        <span class="equip-field-label" style="padding-top:3px;">Descrição</span>
+        <textarea class="equip-field-input" id="eq_desc_${id}" style="min-height:56px;width:100%;" placeholder="Descreva o item...">${entry?.desc||''}</textarea>
+      </div>` : `
+      <div class="equip-field-row">
+        <span class="equip-field-label">Efeito / Dano</span>
+        <input class="equip-field-input" type="text" id="eq_efeito_${id}" placeholder="Ex: 1d6+2 ou reduz 1 dano" value="${entry?.efeito||''}">
+      </div>
+      <div class="equip-field-row">
+        <span class="equip-field-label">Materiais</span>
+        <input class="equip-field-input" type="text" id="eq_mat_${id}" placeholder="Ex: Aço, Couro" value="${entry?.mat||''}">
+      </div>
+      <div class="equip-field-row">
+        <span class="equip-field-label">Peso</span>
+        <input class="equip-field-input" type="text" id="eq_peso_${id}" placeholder="Ex: 1" style="max-width:80px;" value="${entry?.peso||''}">
+      </div>
+      <div class="equip-field-row">
+        <span class="equip-field-label">Empunhadura</span>
+        <select class="equip-empunhadura-select" id="eq_emp_${id}">
+          <option value="">—</option>
+          <option value="Vestimenta"${entry?.emp==='Vestimenta'?' selected':''}>Vestimenta</option>
+          <option value="Versátil"${entry?.emp==='Versátil'?' selected':''}>Versátil</option>
+          <option value="Uma Mão"${entry?.emp==='Uma Mão'?' selected':''}>Uma Mão</option>
+          <option value="Duas Mãos"${entry?.emp==='Duas Mãos'?' selected':''}>Duas Mãos</option>
+        </select>
+      </div>`;
+
+  card.innerHTML = `
+    <div class="equip-card-header" onclick="headerToggleCollapse(event)">
+      <span class="card-toggle-icon">⌄</span>
+      <span class="equip-type-tag">${isSimples ? 'Item Simples' : 'Item'}</span>
+      <input class="equip-name-input" type="text" id="eq_nome_${id}" placeholder="Nome do item..." value="${entry?.nome||''}">
+      <button class="acao-remove-btn" onclick="removeEquip(${id})">✕</button>
+    </div>
+    <div class="equip-fields">${fieldsHtml}</div>`;
+
+  list.appendChild(card);
+  card.querySelectorAll('input, select, textarea').forEach(el => el.addEventListener('change', schedSave));
+  card.querySelectorAll('input, textarea').forEach(el => el.addEventListener('input', schedSave));
+  document.getElementById(`eq_peso_${id}`)?.addEventListener('input', recalcInvAtual);
+  recalcInvAtual();
+  if (!entry) { card.querySelector('.equip-name-input').focus(); schedSave(); }
+}
+
+function addEquipSimples() {
+  addEquip(null, 'simples');
+}
+
+function removeEquip(id) {
+  const card = document.querySelector(`[data-equip-id="${id}"]`);
+  if (card) { card.remove(); recalcInvAtual(); schedSave(); }
+}
+
+function collectEquips() {
+  const items = [];
+  document.querySelectorAll('.equip-card').forEach(card => {
+    const id = card.dataset.equipId;
+    const tipo = card.dataset.equipTipo || 'completo';
+    const item = {
+      id,
+      tipo,
+      nome: document.getElementById(`eq_nome_${id}`)?.value || '',
+      peso: document.getElementById(`eq_peso_${id}`)?.value || '',
+    };
+    if (tipo === 'simples') {
+      item.desc = document.getElementById(`eq_desc_${id}`)?.value || '';
+    } else {
+      item.efeito = document.getElementById(`eq_efeito_${id}`)?.value || '';
+      item.mat = document.getElementById(`eq_mat_${id}`)?.value || '';
+      item.emp = document.getElementById(`eq_emp_${id}`)?.value || '';
+    }
+    items.push(item);
+  });
+  return items;
+}
+
+function restoreEquips(items) {
+  const list = document.getElementById('equip-list');
+  if (!list) return;
+  list.innerHTML = '';
+  equipCounter = 0;
+  if (!items || !items.length) return;
+  items.forEach(entry => {
+    equipCounter = Math.max(equipCounter, parseInt(entry.id) || 0);
+    addEquip(entry);
+  });
+}
+
+/* ════════════════════════════════════════════════════
+   HABILIDADES DO SOBREVIVENTE (CARDS)
+════════════════════════════════════════════════════ */
+let habSurvCounter = 0;
+
+function addHabilidadeSurv(entry) {
+  const id = entry ? entry.id : ++habSurvCounter;
+  if (!entry) habSurvCounter = Math.max(habSurvCounter, id);
+  const list = document.getElementById('habilidades-surv-list');
+  const card = document.createElement('div');
+  card.className = 'hab-surv-card';
+  card.dataset.habSurvId = id;
+
+  card.innerHTML = `
+    <div class="acao-card-header" onclick="headerToggleCollapse(event)">
+      <span class="card-toggle-icon">⌄</span>
+      <span class="acao-type-tag habilidade">Habilidade</span>
+      <input class="acao-name-input" type="text" id="hab_surv_nome_${id}" placeholder="Nome da habilidade..." value="${entry?.nome||''}">
+      <button class="acao-remove-btn" onclick="removeHabilidadeSurv(${id})">✕</button>
+    </div>
+    <div class="acao-fields">
+      <div class="acao-field-row">
+        <span class="acao-field-label">Custo</span>
+        <input class="acao-field-input" type="text" id="hab_surv_custo_${id}" placeholder="Ex: 2 PE / 1 Ação / 1 MD" value="${entry?.custo||''}">
+      </div>
+      <div class="acao-field-row" style="align-items:flex-start;">
+        <span class="acao-field-label" style="padding-top:3px;">Efeito</span>
+        <textarea class="acao-field-input" id="hab_surv_efeito_${id}" style="min-height:56px;" placeholder="Descreva o efeito da habilidade...">${entry?.efeito||''}</textarea>
+      </div>
+    </div>`;
+
+  list.appendChild(card);
+  card.querySelectorAll('input, textarea').forEach(el => el.addEventListener('input', schedSave));
+  if (!entry) { card.querySelector('.acao-name-input').focus(); schedSave(); }
+}
+
+function removeHabilidadeSurv(id) {
+  const card = document.querySelector(`[data-hab-surv-id="${id}"]`);
+  if (card) { card.remove(); schedSave(); }
+}
+
+function collectHabilidadesSurv() {
+  const items = [];
+  document.querySelectorAll('.hab-surv-card').forEach(card => {
+    const id = card.dataset.habSurvId;
+    items.push({
+      id,
+      nome: document.getElementById(`hab_surv_nome_${id}`)?.value || '',
+      custo: document.getElementById(`hab_surv_custo_${id}`)?.value || '',
+      efeito: document.getElementById(`hab_surv_efeito_${id}`)?.value || '',
+    });
+  });
+  return items;
+}
+
+function restoreHabilidadesSurv(items) {
+  const list = document.getElementById('habilidades-surv-list');
+  if (!list) return;
+  list.innerHTML = '';
+  habSurvCounter = 0;
+  if (!items || !items.length) return;
+  items.forEach(entry => {
+    habSurvCounter = Math.max(habSurvCounter, parseInt(entry.id) || 0);
+    addHabilidadeSurv(entry);
+  });
+}
+
+/* ════════════════════════════════════════════════════
+   ENERGIAS DO SOBREVIVENTE (CARDS)
+════════════════════════════════════════════════════ */
+let energiaSurvCounter = 0;
+
+function addEnergiaSurv(entry) {
+  const id = entry ? entry.id : ++energiaSurvCounter;
+  if (!entry) energiaSurvCounter = Math.max(energiaSurvCounter, id);
+  const list = document.getElementById('energias-surv-list');
+  const card = document.createElement('div');
+  card.className = 'energia-surv-card';
+  card.dataset.energiaSurvId = id;
+
+  card.innerHTML = `
+    <div class="acao-card-header" onclick="headerToggleCollapse(event)">
+      <span class="card-toggle-icon">⌄</span>
+      <span class="energia-type-tag">Energia</span>
+      <input class="energia-name-input" type="text" id="en_surv_nome_${id}" placeholder="Nome da energia..." value="${entry?.nome||''}">
+      <button class="acao-remove-btn" onclick="removeEnergiaSurv(${id})">✕</button>
+    </div>
+    <div class="acao-fields">
+      <div class="acao-field-row">
+        <span class="acao-field-label">Custo</span>
+        <input class="acao-field-input" type="text" id="en_surv_custo_${id}" placeholder="Ex: 2 PE / 1 Ação / 1 MD" value="${entry?.custo||''}">
+      </div>
+      <div class="acao-field-row">
+        <span class="acao-field-label">Capacidade</span>
+        <select class="energia-cap-select" id="en_surv_cap_${id}">
+          <option value="">—</option>
+          <option value="1ª Capacidade"${entry?.cap==='1ª Capacidade'?' selected':''}>1ª Capacidade</option>
+          <option value="2ª Capacidade"${entry?.cap==='2ª Capacidade'?' selected':''}>2ª Capacidade</option>
+          <option value="3ª Capacidade"${entry?.cap==='3ª Capacidade'?' selected':''}>3ª Capacidade</option>
+          <option value="4ª Capacidade"${entry?.cap==='4ª Capacidade'?' selected':''}>4ª Capacidade</option>
+        </select>
+      </div>
+      <div class="energia-efeitos-grid" style="margin-top:6px;">
+        <div>
+          <div class="energia-efeito-label">Efeito</div>
+          <textarea class="acao-field-input" id="en_surv_efeito_${id}" style="min-height:70px;width:100%;" placeholder="Descreva o efeito...">${entry?.efeito||''}</textarea>
+        </div>
+        <div>
+          <div class="energia-efeito-label corrupto">Efeito Corrompido</div>
+          <textarea class="acao-field-input" id="en_surv_corrupto_${id}" style="min-height:70px;width:100%;border-color:rgba(140,60,160,0.3);" placeholder="Efeito ao usar corrompido...">${entry?.corrupto||''}</textarea>
+        </div>
+      </div>
+    </div>`;
+
+  list.appendChild(card);
+  card.querySelectorAll('input, textarea, select').forEach(el => el.addEventListener('input', schedSave));
+  card.querySelectorAll('select').forEach(el => el.addEventListener('change', schedSave));
+  if (!entry) { card.querySelector('.energia-name-input').focus(); schedSave(); }
+}
+
+function removeEnergiaSurv(id) {
+  const card = document.querySelector(`[data-energia-surv-id="${id}"]`);
+  if (card) { card.remove(); schedSave(); }
+}
+
+function collectEnergiasSurv() {
+  const items = [];
+  document.querySelectorAll('.energia-surv-card').forEach(card => {
+    const id = card.dataset.energiaSurvId;
+    items.push({
+      id,
+      nome: document.getElementById(`en_surv_nome_${id}`)?.value || '',
+      custo: document.getElementById(`en_surv_custo_${id}`)?.value || '',
+      cap: document.getElementById(`en_surv_cap_${id}`)?.value || '',
+      efeito: document.getElementById(`en_surv_efeito_${id}`)?.value || '',
+      corrupto: document.getElementById(`en_surv_corrupto_${id}`)?.value || '',
+    });
+  });
+  return items;
+}
+
+function restoreEnergiasSurv(items) {
+  const list = document.getElementById('energias-surv-list');
+  if (!list) return;
+  list.innerHTML = '';
+  energiaSurvCounter = 0;
+  if (!items || !items.length) return;
+  items.forEach(entry => {
+    energiaSurvCounter = Math.max(energiaSurvCounter, parseInt(entry.id) || 0);
+    addEnergiaSurv(entry);
+  });
+}
 
 function addAcao(type) {
   const id = ++acaoCounter;
@@ -3691,8 +4333,16 @@ saveCharList = function(list) {
 
 const _origDeleteChar = deleteChar;
 deleteChar = function(id, e) {
-  markCharDeleted(id); 
-  _origDeleteChar(id, e);
+  if (e) e.stopPropagation();
+  const list = getCharList();
+  const char = list.find(c => c.id === id);
+  if (!confirm(`Apagar o personagem "${char?.name || 'este sobrevivente'}"? Esta ação não pode ser desfeita.`)) return;
+  markCharDeleted(id);
+  const newList = list.filter(c => c.id !== id);
+  saveCharList(newList);
+  localStorage.removeItem(CHAR_PREFIX + id);
+  renderIndex();
+  showToast('Ficha apagada');
   scheduleGistSync();
 };
 
