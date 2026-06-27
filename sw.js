@@ -1,9 +1,11 @@
-const CACHE_NAME = 'honorda-rpg-v1';
+const CACHE_NAME = 'honorda-rpg-v8';
 
 // Arquivos essenciais para funcionar offline
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
+  './styles.css',
+  './script.js',
   './manifest.json'
   // Adicione aqui as imagens de ícone quando as criar:
   // './icon-192.png',
